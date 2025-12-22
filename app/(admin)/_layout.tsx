@@ -1,13 +1,38 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
 
 const AdminLayout = () => {
   return (
-    <Tabs>
-            <Tabs.Screen   name='Admindashboard' options={{headerShown:false}}  />    
-            <Tabs.Screen   name='Customizations' options={{headerShown:false}}  />    
+    <Tabs 
+      screenOptions={{ 
+        // Sets the active tab color to match your brand purple
+        tabBarActiveTintColor: '#8b008b',
+        tabBarInactiveTintColor: 'gray',
+      }}
+    >
+      <Tabs.Screen 
+        name='Admindashboard' 
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Dashboard',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="grid-outline" size={size} color={color} />
+          ),
+        }} 
+      />    
+      <Tabs.Screen 
+        name='Customizations' 
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Inventory',
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cube-outline" size={size} color={color} />
+          ),
+        }} 
+      />    
     </Tabs>
-  )
+  );
 }
 
 export default AdminLayout;
