@@ -7,7 +7,12 @@ import axios, {
 
 const getToken = async (): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem("AccessToken");
+    const token = await AsyncStorage.getItem("AccessToken");
+    console.log(
+      "Token from AsyncStorage:",
+      token ? "Token exists" : "No token"
+    );
+    return token;
   } catch (error) {
     console.error("Error getting token:", error);
     return null;
@@ -28,9 +33,11 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
       config: InternalAxiosRequestConfig
     ): Promise<InternalAxiosRequestConfig> => {
       const token: string | null = await getToken();
+      console.log("Retrieved token:", token ? "Token exists" : "No token");
 
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log("Added Authorization header");
       }
       return config;
     },
@@ -41,5 +48,14 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
 };
 
 export const rootApi: AxiosInstance = createAxiosInstance(
-  "http://192.168.0.246:8080"
+  "http://192.168.0.225:8083"
+);
+export const adressApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.225:8083"
+);
+export const cartApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.225:8082"
+);
+export const payApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.215:8082"
 );

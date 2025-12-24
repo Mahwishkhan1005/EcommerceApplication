@@ -586,9 +586,7 @@ const CartScreen = () => {
         }
 
         if (savedParsed && savedParsed.id) {
-          const found = formatted.find(
-            (a: { id: any }) => a.id === savedParsed.id
-          );
+          const found = formatted.find((a) => a.id === savedParsed.id);
           if (found) {
             setSelectedAddress(found);
           } else if (formatted.length > 0) {
@@ -666,7 +664,7 @@ const CartScreen = () => {
 
       setAddressesList((prev) => prev.filter((a) => a.id !== id));
 
-      setSelectedAddress((prevSelected: { id: any }) => {
+      setSelectedAddress((prevSelected) => {
         if (!prevSelected || prevSelected.id !== id) return prevSelected;
 
         // fresh remaining list
@@ -1819,8 +1817,6 @@ const CartScreen = () => {
           </ScrollView>
         </View>
       </Modal>
-
-      {/* In this part when we complete our order then it will show thanks for ordering your order will reach soon... */}
 
       <Modal
         visible={showSuccessModal}
