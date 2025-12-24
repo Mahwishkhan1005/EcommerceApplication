@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   Modal,
   ScrollView,
   Text,
@@ -18,15 +20,19 @@ import { adressApi } from '../(utils)/axiosInstance';
 const STORAGE_PROFILE = '@AS_profile';
 const STORAGE_ADDRESS = '@saved_user_address';
 const AUTH_TOKEN_KEY = '@auth_token';
+const ORDER_HISTORY_KEY = '@order_history';
 
 export default function AccountSidebar() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [addressesModalVisible, setAddressesModalVisible] = useState(false);
+  const [ordersModalVisible, setOrdersModalVisible] = useState(false);
   const [editName, setEditName] = useState('Guest User');
   const [editPhone, setEditPhone] = useState('');
   const [loaded, setLoaded] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
+  const [orderHistory, setOrderHistory] = useState<any[]>([]);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
+  const [loadingOrders, setLoadingOrders] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Edit Address Modal
@@ -42,6 +48,10 @@ export default function AccountSidebar() {
   const [stateName, setStateName] = useState('');
   const [pincode, setPincode] = useState('');
 
+  // Selected Order for Details
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [orderDetailsModalVisible, setOrderDetailsModalVisible] = useState(false);
+
   useEffect(() => {
     (async () => {
       try {
@@ -52,6 +62,7 @@ export default function AccountSidebar() {
           setEditPhone(parsed.phone ?? '');
         }
         await loadAddressesFromStorage();
+        await loadOrderHistory();
       } catch (err) {
         console.warn('Failed to load data from storage:', err);
       } finally {
@@ -74,6 +85,19 @@ export default function AccountSidebar() {
     } catch (err) {
       console.warn('failed to load addresses:', err);
       setSavedAddresses([]);
+    }
+  };
+
+  const loadOrderHistory = async () => {
+    try {
+      const raw = await AsyncStorage.getItem(ORDER_HISTORY_KEY);
+      if (raw) {
+        const orders = JSON.parse(raw);
+        setOrderHistory(Array.isArray(orders) ? orders : []);
+      }
+    } catch (err) {
+      console.warn('failed to load order history:', err);
+      setOrderHistory([]);
     }
   };
 
@@ -117,28 +141,28 @@ export default function AccountSidebar() {
     }
   };
 
- const deleteAddressFromApi = async (id) => {
-     try {
-       setIsProcessing(true);
-       console.log('Deleting address ID:', id);
-       
-       const response = await adressApi.delete(`/address/delete/${id}`,id);
- 
-       console.log('Delete response:', JSON.stringify(response, null, 2));
-       
-       if (response.status === 200 || response.status === 204) {
-         return true;
-       } else {
-         throw new Error(`Delete failed with status: ${response.status}`);
-       }
- 
-     } catch (e) {
-       console.error('Delete API error:', e.response?.data || e.message || e);
-       throw new Error(e.response?.data?.message || e.message || 'Failed to delete address');
-     } finally {
-       setIsProcessing(false);
-     }
-   };
+  const deleteAddressFromApi = async (id: string) => {
+    try {
+      setIsProcessing(true);
+      console.log('Deleting address ID:', id);
+      
+      const response = await adressApi.delete(`/address/delete/${id}`);
+
+      console.log('Delete response:', JSON.stringify(response, null, 2));
+      
+      if (response.status === 200 || response.status === 204) {
+        return true;
+      } else {
+        throw new Error(`Delete failed with status: ${response.status}`);
+      }
+
+    } catch (e: any) {
+      console.error('Delete API error:', e.response?.data || e.message || e);
+      throw new Error(e.response?.data?.message || e.message || 'Failed to delete address');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const updateAddressToApi = async (addressData: any) => {
     try {
@@ -162,35 +186,35 @@ export default function AccountSidebar() {
     }
   };
 
-  // const handleDeleteAddress = (address: any) => {
-  //   if (!address?.id) {
-  //     Alert.alert('Error', 'Invalid address');
-  //     return;
-  //   }
+  const handleDeleteAddress = (address: any) => {
+    if (!address?.id) {
+      Alert.alert('Error', 'Invalid address');
+      return;
+    }
 
-  //   Alert.alert('Delete Address', 'Are you sure you want to delete this address?', [
-  //     { text: 'Cancel', style: 'cancel' },
-  //     {
-  //       text: 'Delete',
-  //       style: 'destructive',
-  //       onPress: async () => {
-  //         try {
-  //           await deleteAddressFromApi(address.id);
-  //           const updatedList = savedAddresses.filter((item: any) => item.id !== address.id);
-  //           setSavedAddresses(updatedList);
-  //           if (updatedList.length > 0) {
-  //             await AsyncStorage.setItem(STORAGE_ADDRESS, JSON.stringify(updatedList[0]));
-  //           } else {
-  //             await AsyncStorage.removeItem(STORAGE_ADDRESS);
-  //           }
-  //           Alert.alert('Success', 'Address deleted successfully');
-  //         } catch (error: any) {
-  //           Alert.alert('Error', error.message || 'Failed to delete address');
-  //         }
-  //       },
-  //     },
-  //   ]);
-  // };
+    Alert.alert('Delete Address', 'Are you sure you want to delete this address?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteAddressFromApi(address.id);
+            const updatedList = savedAddresses.filter((item: any) => item.id !== address.id);
+            setSavedAddresses(updatedList);
+            if (updatedList.length > 0) {
+              await AsyncStorage.setItem(STORAGE_ADDRESS, JSON.stringify(updatedList[0]));
+            } else {
+              await AsyncStorage.removeItem(STORAGE_ADDRESS);
+            }
+            Alert.alert('Success', 'Address deleted successfully');
+          } catch (error: any) {
+            Alert.alert('Error', error.message || 'Failed to delete address');
+          }
+        },
+      },
+    ]);
+  };
 
   const openEditAddressModal = (address: any) => {
     if (!address) return;
@@ -269,6 +293,56 @@ export default function AccountSidebar() {
     setPincode('');
   };
 
+  const openOrdersModal = async () => {
+    setLoadingOrders(true);
+    setOrdersModalVisible(true);
+    try {
+      await loadOrderHistory();
+    } catch (error) {
+      console.error('Error loading orders:', error);
+      Alert.alert('Error', 'Failed to load order history');
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  const openOrderDetails = (order: any) => {
+    setSelectedOrder(order);
+    setOrderDetailsModalVisible(true);
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return '#10b981'; // green
+      case 'shipped':
+        return '#3b82f6'; // blue
+      case 'delivered':
+        return '#8b5cf6'; // purple
+      case 'cancelled':
+        return '#ef4444'; // red
+      default:
+        return '#6b7280'; // gray
+    }
+  };
+
   const displayName = editName || 'Guest User';
   const displayPhone = editPhone || '';
 
@@ -319,6 +393,29 @@ export default function AccountSidebar() {
     return { fullAddress, cityStatePincode };
   };
 
+  const clearOrderHistory = async () => {
+    Alert.alert(
+      'Clear History',
+      'Are you sure you want to clear all order history?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await AsyncStorage.removeItem(ORDER_HISTORY_KEY);
+              setOrderHistory([]);
+              Alert.alert('Success', 'Order history cleared');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to clear order history');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (!loaded) {
     return (
       <SafeAreaView className="flex-1 bg-white">
@@ -349,7 +446,11 @@ export default function AccountSidebar() {
           ) : null}
 
           <View className="w-full mt-2">
-            <ProfileRow icon="time-outline" label="Order History" onPress={() => {}} />
+            <ProfileRow 
+              icon="bag-outline" 
+              label="Order History" 
+              onPress={openOrdersModal} 
+            />
             <ProfileRow
               icon="location-outline"
               label="Shipping Address"
@@ -360,12 +461,11 @@ export default function AccountSidebar() {
               label="Edit Profile"
               onPress={openProfileModal}
             />
-            <ProfileRow
-              icon="log-out-outline"
-              label="Log out"
-              onPress={() => {}}
-              isLast
-            />
+            {/* <ProfileRow
+              icon="cart-outline"
+              label="Continue Shopping"
+              onPress={() => router.push('/(customer)/home')}
+            /> */}
           </View>
         </ScrollView>
 
@@ -417,7 +517,282 @@ export default function AccountSidebar() {
           </View>
         </Modal>
 
-        {/* Addresses Modal */}
+        {/* Order History Modal */}
+        <Modal
+          visible={ordersModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setOrdersModalVisible(false)}
+        >
+          <View className="flex-1 bg-black/50 justify-center items-center px-5">
+            <View className="w-full max-w-md bg-white p-5 max-h-[80%]">
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-lg font-bold text-neutral-900">
+                  Order History ({orderHistory.length})
+                </Text>
+                <View className="flex-row items-center">
+                  {orderHistory.length > 0 && (
+                    <TouchableOpacity
+                      onPress={clearOrderHistory}
+                      className="mr-3 p-1"
+                      disabled={isProcessing}
+                    >
+                      <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                    </TouchableOpacity>
+                  )}
+                  <TouchableOpacity
+                    onPress={() => setOrdersModalVisible(false)}
+                    className="p-1"
+                  >
+                    <Ionicons name="close" size={24} color="#666" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {loadingOrders ? (
+                <View className="items-center justify-center py-10">
+                  <ActivityIndicator size="large" color="#e6005c" />
+                  <Text className="text-sm text-neutral-500 mt-3">
+                    Loading orders...
+                  </Text>
+                </View>
+              ) : orderHistory.length > 0 ? (
+                <FlatList
+                  data={orderHistory}
+                  keyExtractor={(item: any, index) => 
+                    item.orderId ? item.orderId.toString() : index.toString()
+                  }
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{ paddingVertical: 8 }}
+                  renderItem={({ item }: any) => (
+                    <TouchableOpacity
+                      className="bg-white border border-gray-200 p-4 mb-3 rounded-lg shadow-sm"
+                      onPress={() => openOrderDetails(item)}
+                      activeOpacity={0.7}
+                    >
+                      <View className="flex-row justify-between items-center mb-2">
+                        <Text className="font-bold text-neutral-800">
+                          Order #{item.orderId}
+                        </Text>
+                        <View className="px-2 py-1 rounded" style={{ backgroundColor: getStatusColor(item.status) + '20' }}>
+                          <Text className="text-xs font-semibold" style={{ color: getStatusColor(item.status) }}>
+                            {item.status}
+                          </Text>
+                        </View>
+                      </View>
+                      
+                      <Text className="text-sm text-neutral-600 mb-1">
+                        {formatDate(item.orderDate)} • {formatTime(item.orderDate)}
+                      </Text>
+                      
+                      <View className="flex-row justify-between items-center mt-2">
+                        <Text className="text-sm text-neutral-500">
+                          {item.items.length} item{item.items.length > 1 ? 's' : ''}
+                        </Text>
+                        <Text className="font-bold text-neutral-900">
+                          ₹{item.totalAmount}
+                        </Text>
+                      </View>
+                      
+                      <View className="flex-row items-center mt-3 pt-3 border-t border-gray-100">
+                        <Ionicons name="location-outline" size={14} color="#666" />
+                        <Text className="text-xs text-neutral-500 ml-1 flex-1" numberOfLines={1}>
+                          {item.address?.city || 'Location not specified'}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  ListEmptyComponent={
+                    <View className="items-center justify-center py-10">
+                      <Ionicons name="bag-outline" size={48} color="#ccc" />
+                      <Text className="text-base text-neutral-500 mt-4">
+                        No orders yet
+                      </Text>
+                      <Text className="text-sm text-neutral-400 mt-2">
+                        Your order history will appear here
+                      </Text>
+                    </View>
+                  }
+                />
+              ) : (
+                <View className="items-center justify-center py-10">
+                  <Ionicons name="bag-outline" size={48} color="#ccc" />
+                  <Text className="text-base text-neutral-500 mt-4">
+                    No orders yet
+                  </Text>
+                  <Text className="text-sm text-neutral-400 mt-2">
+                    Start shopping to see your orders here
+                  </Text>
+                  <TouchableOpacity
+                    className="mt-4 px-6 py-3 bg-pink-500 rounded-full"
+                    onPress={() => {
+                      setOrdersModalVisible(false);
+                      router.push('/(customer)/home');
+                    }}
+                  >
+                    <Text className="text-white font-bold">Start Shopping</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              <TouchableOpacity
+                className="mt-5 py-3 bg-pink-500 items-center rounded-lg"
+                onPress={() => setOrdersModalVisible(false)}
+                disabled={isProcessing}
+              >
+                <Text className="text-white font-bold text-base">Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Order Details Modal */}
+        <Modal
+          visible={orderDetailsModalVisible}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setOrderDetailsModalVisible(false)}
+        >
+          <View className="flex-1 bg-black/50 justify-center items-center px-5">
+            <View className="w-full max-w-md bg-white p-5 max-h-[90%]">
+              <View className="flex-row items-center justify-between mb-4">
+                <Text className="text-lg font-bold text-neutral-900">
+                  Order Details
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setOrderDetailsModalVisible(false)}
+                  className="p-1"
+                >
+                  <Ionicons name="close" size={24} color="#666" />
+                </TouchableOpacity>
+              </View>
+
+              {selectedOrder && (
+                <ScrollView className="flex-1">
+                  {/* Order Header */}
+                  <View className="mb-6 p-4 bg-gray-50 rounded-lg">
+                    <View className="flex-row justify-between items-center mb-2">
+                      <Text className="font-bold text-lg text-neutral-900">
+                        Order #{selectedOrder.orderId}
+                      </Text>
+                      <View className="px-3 py-1 rounded-full" style={{ backgroundColor: getStatusColor(selectedOrder.status) + '20' }}>
+                        <Text className="text-sm font-semibold" style={{ color: getStatusColor(selectedOrder.status) }}>
+                          {selectedOrder.status}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <Text className="text-neutral-600 mb-1">
+                      Ordered on {formatDate(selectedOrder.orderDate)} at {formatTime(selectedOrder.orderDate)}
+                    </Text>
+                    
+                    <View className="mt-3 pt-3 border-t border-gray-200">
+                      <View className="flex-row justify-between">
+                        <Text className="font-semibold text-neutral-700">Total Amount:</Text>
+                        <Text className="font-bold text-lg text-neutral-900">₹{selectedOrder.totalAmount}</Text>
+                      </View>
+                      
+                      {selectedOrder.couponDiscount > 0 && (
+                        <View className="flex-row justify-between mt-1">
+                          <Text className="text-neutral-600">Coupon Discount:</Text>
+                          <Text className="text-green-600 font-semibold">- ₹{selectedOrder.couponDiscount}</Text>
+                        </View>
+                      )}
+                      
+                      <View className="flex-row justify-between mt-1">
+                        <Text className="text-neutral-600">Payment Method:</Text>
+                        <Text className="font-semibold text-neutral-700 capitalize">
+                          {selectedOrder.paymentMethod}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  {/* Items List */}
+                  <Text className="font-bold text-neutral-900 mb-3">Items Ordered</Text>
+                  {selectedOrder.items.map((item: any, index: number) => (
+                    <View key={index} className="flex-row items-center mb-3 p-3 border border-gray-100 rounded-lg">
+                      <Image
+                        source={{ uri: item.image }}
+                        className="w-16 h-16 rounded-lg bg-gray-100 mr-3"
+                      />
+                      <View className="flex-1">
+                        <Text className="font-semibold text-neutral-800 mb-1" numberOfLines={1}>
+                          {item.name}
+                        </Text>
+                        <Text className="text-sm text-neutral-600 mb-1">
+                          Quantity: {item.quantity}
+                        </Text>
+                        <Text className="font-semibold text-neutral-900">
+                          ₹{item.price * item.quantity}
+                        </Text>
+                      </View>
+                    </View>
+                  ))}
+
+                  {/* Delivery Address */}
+                  <Text className="font-bold text-neutral-900 mb-3 mt-6">Delivery Address</Text>
+                  <View className="p-4 bg-gray-50 rounded-lg mb-3">
+                    {selectedOrder.address ? (
+                      <>
+                        <Text className="font-semibold text-neutral-800 mb-2">
+                          {selectedOrder.address.title} Address
+                        </Text>
+                        <Text className="text-neutral-600 mb-1">
+                          {selectedOrder.address.house}, {selectedOrder.address.street}
+                        </Text>
+                        {selectedOrder.address.landmark && (
+                          <Text className="text-neutral-600 mb-1">
+                            Landmark: {selectedOrder.address.landmark}
+                          </Text>
+                        )}
+                        <Text className="text-neutral-600 mb-1">
+                          {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.pincode}
+                        </Text>
+                        {selectedOrder.address.name && (
+                          <Text className="text-neutral-600 mb-1">
+                            Receiver: {selectedOrder.address.name}
+                          </Text>
+                        )}
+                        {selectedOrder.address.phone && (
+                          <Text className="text-neutral-600">
+                            Phone: {selectedOrder.address.phone}
+                          </Text>
+                        )}
+                      </>
+                    ) : (
+                      <Text className="text-neutral-500">Address not available</Text>
+                    )}
+                  </View>
+
+                  {/* Delivery Instructions */}
+                  {selectedOrder.deliveryInstructions && selectedOrder.deliveryInstructions.length > 0 && (
+                    <>
+                      <Text className="font-bold text-neutral-900 mb-3">Delivery Instructions</Text>
+                      <View className="p-4 bg-gray-50 rounded-lg mb-3">
+                        {selectedOrder.deliveryInstructions.map((instruction: string, index: number) => (
+                          <View key={index} className="flex-row items-center mb-2">
+                            <Ionicons name="checkmark-circle" size={16} color="#10b981" />
+                            <Text className="ml-2 text-neutral-600">{instruction}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </>
+                  )}
+                </ScrollView>
+              )}
+
+              <TouchableOpacity
+                className="mt-5 py-3 bg-pink-500 items-center rounded-lg"
+                onPress={() => setOrderDetailsModalVisible(false)}
+              >
+                <Text className="text-white font-bold text-base">Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Addresses Modal (keep existing code) */}
         <Modal
           visible={addressesModalVisible}
           animationType="slide"
@@ -532,10 +907,9 @@ export default function AccountSidebar() {
                               </>
                             )}
                           </TouchableOpacity>
-                           {/* in this part when we want to delete address then we select item.id except of only id*/}
                           <TouchableOpacity
                             className="flex-row items-center px-3 py-1 border border-red-300 ml-2"
-                            onPress={() => deleteAddressFromApi(item.id)}
+                            onPress={() => handleDeleteAddress(item)}
                             disabled={isProcessing}
                           >
                             {isProcessing ? (
@@ -592,7 +966,7 @@ export default function AccountSidebar() {
           </View>
         </Modal>
 
-        {/* Edit Address Modal */}
+        {/* Edit Address Modal (keep existing code) */}
         <Modal
           visible={editAddressModalVisible}
           animationType="slide"
