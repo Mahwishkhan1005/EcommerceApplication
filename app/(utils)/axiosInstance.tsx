@@ -47,15 +47,7 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
   return instance;
 };
 
-export const rootApi: AxiosInstance = createAxiosInstance(
-  "http://192.168.0.225:8083"
-);
-export const adressApi: AxiosInstance = createAxiosInstance(
-  "http://192.168.0.225:8083"
-);
-export const cartApi: AxiosInstance = createAxiosInstance(
-  "http://192.168.0.225:8082"
-);
-export const payApi: AxiosInstance = createAxiosInstance(
-  "http://192.168.0.215:8082"
-);
+export const rootApi: AxiosInstance = createAxiosInstance("http://192.168.0.225:8083");
+export const adressApi: AxiosInstance = createAxiosInstance("http://192.168.0.225:8083");
+export const cartApi: AxiosInstance = createAxiosInstance("http://192.168.0.225:8082");
+export const payApi: AxiosInstance = createAxiosInstance("http://192.168.0.215:8082");

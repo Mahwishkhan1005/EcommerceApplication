@@ -65,18 +65,14 @@ const CartScreen = () => {
 
   const [loadingApi, setLoadingApi] = useState(false);
   const [addressesList, setAddressesList] = useState<any[]>([]);
-  const [editingAddressId, setEditingAddressId] = useState<
-    string | number | null
-  >(null);
+  const [editingAddressId, setEditingAddressId] = useState<string | number | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAllOtherAddresses, setShowAllOtherAddresses] = useState(true);
 
   const [recentlyAddedProduct, setRecentlyAddedProduct] = useState<any>(null);
 
   const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
-    "cod" | "card"
-  >("cod");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"cod" | "card">("cod");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [cardNumber, setCardNumber] = useState("");
   const [cardHolderName, setCardHolderName] = useState("");
