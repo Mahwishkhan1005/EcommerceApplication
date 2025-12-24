@@ -1,15 +1,18 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, {
-    AxiosError,
-    AxiosInstance,
-    InternalAxiosRequestConfig,
-} from 'axios';
- 
-
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+} from "axios";
 
 const getToken = async (): Promise<string | null> => {
   try {
-    return await AsyncStorage.getItem("AccessToken");
+    const token = await AsyncStorage.getItem("AccessToken");
+    console.log(
+      "Token from AsyncStorage:",
+      token ? "Token exists" : "No token"
+    );
+    return token;
   } catch (error) {
     console.error("Error getting token:", error);
     return null;
@@ -19,18 +22,22 @@ const getToken = async (): Promise<string | null> => {
 const createAxiosInstance = (baseURL: string): AxiosInstance => {
   const instance: AxiosInstance = axios.create({
     baseURL: baseURL,
-    timeout: 10000,  
+    timeout: 10000,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   });
 
   instance.interceptors.request.use(
-    async (config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> => {
+    async (
+      config: InternalAxiosRequestConfig
+    ): Promise<InternalAxiosRequestConfig> => {
       const token: string | null = await getToken();
-      
+      console.log("Retrieved token:", token ? "Token exists" : "No token");
+
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
+        console.log("Added Authorization header");
       }
       return config;
     },
@@ -40,4 +47,15 @@ const createAxiosInstance = (baseURL: string): AxiosInstance => {
   return instance;
 };
 
-export const rootApi: AxiosInstance = createAxiosInstance("http://192.168.0.246:8080");
+export const rootApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.225:8083"
+);
+export const adressApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.225:8083"
+);
+export const cartApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.225:8082"
+);
+export const payApi: AxiosInstance = createAxiosInstance(
+  "http://192.168.0.215:8082"
+);

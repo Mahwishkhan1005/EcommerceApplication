@@ -69,7 +69,7 @@ const Home = () => {
     useState<Products | null>(null);
 
   const isWeb = Platform.OS === "web";
-  const API_BASE = "http://192.168.0.200:8081";
+  const API_BASE = "http://192.168.0.225:8081";
 
   const params = useLocalSearchParams();
   const passedProduct = params?.product
@@ -105,8 +105,6 @@ const Home = () => {
     }
   };
 
-  // ---------------- CART HELPERS ----------------
-
   const fetchCartItems = async () => {
     try {
       const response = await cartApi.get(`/api/cart/byId`);
@@ -133,7 +131,7 @@ const Home = () => {
     try {
       await AsyncStorage.setItem(
         "recentlyAddedProduct",
-        JSON.stringify(product),
+        JSON.stringify(product)
       );
     } catch (error) {
       console.error("Error storing recently added product:", error);
@@ -171,12 +169,12 @@ const Home = () => {
       await cartApi.put(
         `/api/cart/item/${itemId}/quantity`,
         {},
-        { params: { quantity: newQty } },
+        { params: { quantity: newQty } }
       ); // [file:3]
 
-      setCartItemsMap(prev => {
+      setCartItemsMap((prev) => {
         const updated = { ...prev };
-        Object.keys(updated).forEach(pidStr => {
+        Object.keys(updated).forEach((pidStr) => {
           const pid = Number(pidStr);
           if (updated[pid].itemId === itemId) {
             updated[pid] = { ...updated[pid], quantity: newQty };
@@ -187,7 +185,7 @@ const Home = () => {
     } catch (error: any) {
       console.error(
         "updateCartItemQuantity error:",
-        error.response?.data || error,
+        error.response?.data || error
       );
       Alert.alert("Error", "Failed to update quantity");
     }
@@ -222,13 +220,13 @@ const Home = () => {
         }
       };
       fetchWishlistFromServer();
-    }, []),
+    }, [])
   );
 
   useFocusEffect(
     useCallback(() => {
       fetchCartItems();
-    }, []),
+    }, [])
   );
 
   const handleToggleWishlist = async (product: Products) => {
@@ -240,13 +238,13 @@ const Home = () => {
       currentWishlist = currentWishlist.filter((i: any) => i !== null);
 
       const exists = currentWishlist.find(
-        (item: any) => item.pid === product.pid,
+        (item: any) => item.pid === product.pid
       );
       let updatedWishlist;
 
       if (exists) {
         updatedWishlist = currentWishlist.filter(
-          (item: any) => item.pid !== product.pid,
+          (item: any) => item.pid !== product.pid
         );
       } else {
         updatedWishlist = [...currentWishlist, product];
@@ -254,14 +252,14 @@ const Home = () => {
 
       await AsyncStorage.setItem(
         "user_wishlist",
-        JSON.stringify(updatedWishlist),
+        JSON.stringify(updatedWishlist)
       );
       setWishlistPids(updatedWishlist.map((i: any) => i.pid));
 
       if (Platform.OS !== "web") {
         Alert.alert(
           exists ? "Removed" : "Added",
-          exists ? "Removed from wishlist" : "Added to wishlist! ❤️",
+          exists ? "Removed from wishlist" : "Added to wishlist! ❤️"
         );
       }
     } catch (error) {
@@ -305,7 +303,7 @@ const Home = () => {
         <View className="flex-row justify-between items-center">
           <View className="flex-row items-center">
             <Text className="text-base font-bold text-black">
-             ₹{sellingPrice}
+              ₹{sellingPrice}
             </Text>
             <Text className="text-xs text-gray-400 line-through ml-3">
               ₹{originalPrice}
@@ -332,32 +330,20 @@ const Home = () => {
           <View className="bg-gray-100 px-2 py-0.5 rounded">
             <Text className="text-[9px] text-gray-600">Premium</Text>
           </View>
-          <Text className="text-xs font-bold">
-            ⭐ {item.rating || "4.5"}
-          </Text>
+          <Text className="text-xs font-bold">⭐ {item.rating || "4.5"}</Text>
         </View>
 
         <View className="flex-row justify-between items-center">
           {isInCart && quantity > 0 ? (
             <View className="flex-row items-center bg-white rounded border border-[#f4d8d8] py-1 px-1.5 flex-1 mr-2">
-              <TouchableOpacity
-                className="px-2 py-1"
-                onPress={handleDecrease}
-              >
-                <Text className="text-lg text-[#e63a00] font-semibold">
-                  −
-                </Text>
+              <TouchableOpacity className="px-2 py-1" onPress={handleDecrease}>
+                <Text className="text-lg text-[#e63a00] font-semibold">−</Text>
               </TouchableOpacity>
               <Text className="text-base font-semibold text-[#e65c00] mx-2">
                 {quantity}
               </Text>
-              <TouchableOpacity
-                className="px-2 py-1"
-                onPress={handleIncrease}
-              >
-                <Text className="text-lg text-[#e63a00] font-semibold">
-                  +
-                </Text>
+              <TouchableOpacity className="px-2 py-1" onPress={handleIncrease}>
+                <Text className="text-lg text-[#e63a00] font-semibold">+</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -442,7 +428,7 @@ const Home = () => {
           </Text>
           <FlatList
             data={categories}
-            keyExtractor={item => `cat-${item.cid}`}
+            keyExtractor={(item) => `cat-${item.cid}`}
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 20 }}
@@ -540,7 +526,7 @@ const Home = () => {
           >
             <FlatList
               data={products}
-              keyExtractor={item => `prod-${item.pid}`}
+              keyExtractor={(item) => `prod-${item.pid}`}
               key={isWeb ? "web-10-col" : "android-horizontal"}
               horizontal={!isWeb}
               numColumns={isWeb ? 10 : 1}
@@ -560,7 +546,7 @@ const Home = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 20 }}
           >
-            {howItWorksSteps.map(step => (
+            {howItWorksSteps.map((step) => (
               <View
                 key={step.id}
                 className="w-72 bg-white rounded-3xl p-6 mr-5 border border-gray-100 shadow-sm items-center"

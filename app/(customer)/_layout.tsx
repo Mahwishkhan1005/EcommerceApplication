@@ -314,12 +314,12 @@
 // export default Customerlayout;
 
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { Tabs } from "expo-router";
 import React, { useEffect, useRef } from "react";
-import { Animated, Text, View, Platform } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import { Animated, Platform, Text, View } from "react-native";
 
-const isWeb = Platform.OS === 'web';
+const isWeb = Platform.OS === "web";
 
 const AnimatedIcon = ({
   focused,
@@ -356,7 +356,7 @@ const AnimatedIcon = ({
         toValue: focused ? 1 : 0,
         duration: 250,
         useNativeDriver: true,
-      })
+      }),
     ]).start();
   }, [focused]);
 
@@ -364,10 +364,7 @@ const AnimatedIcon = ({
     <View className="items-center justify-center w-20">
       <Animated.View
         style={{
-          transform: [
-            { scale: scaleAnim },
-            { translateY: translateYAnim }
-          ],
+          transform: [{ scale: scaleAnim }, { translateY: translateYAnim }],
           // borderRadius:50,
           // borderWidth:1,
           // padding:5,
@@ -375,20 +372,23 @@ const AnimatedIcon = ({
         }}
         className="items-center justify-center"
       >
-        
-        <Ionicons name={name} size={size} color={color} className="px-2 item-center"/>
-        
-        
-        <Text 
+        <Ionicons
+          name={name}
+          size={size}
+          color={color}
+          className="px-2 item-center"
+        />
+
+        <Text
           className={`text-[15px]  ${
-            focused ? 'font-bold text-white' : 'font-medium text-white/70'
+            focused ? "font-bold text-white" : "font-medium text-white/70"
           }`}
         >
           {label}
         </Text>
       </Animated.View>
 
-      <Animated.View 
+      <Animated.View
         style={{ opacity: opacityAnim }}
         className="absolute bottom-2 w-6 h-1 bg-white rounded-full shadow-sm"
       />
@@ -408,17 +408,17 @@ const Customerlayout = () => {
           borderTopWidth: 0,
           elevation: 0,
           height: isWeb ? 70 : 75,
-          borderTopLeftRadius:50,
-          borderTopRightRadius:50,
-          overflow: 'hidden',
+          borderTopLeftRadius: 50,
+          borderTopRightRadius: 50,
+          overflow: "hidden",
         },
         tabBarBackground: () => (
           <LinearGradient
-            colors={['#590080', '#FF80BF']}
+            colors={["#590080", "#FF80BF"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             // Professional curve for both platforms, slightly less aggressive on Web
-            className={`flex-1 ${!isWeb ? 'rounded-t-[30px]' : 'rounded-t-2xl'} shadow-2xl`}
+            className={`flex-1 ${!isWeb ? "rounded-t-[30px]" : "rounded-t-2xl"} shadow-2xl`}
           />
         ),
       }}
