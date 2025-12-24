@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { router, useLocalSearchParams } from "expo-router";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -14,15 +14,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { adressApi, cartApi, payApi } from '../(utils)/axiosInstance';
+} from "react-native";
+import { adressApi, cartApi, payApi } from "../(utils)/axiosInstance";
 
-const STORAGE_ADDRESS = '@saved_user_address';
-const ORDER_HISTORY_KEY = '@order_history';
-
+const STORAGE_ADDRESS = "@saved_user_address";
+const ORDER_HISTORY_KEY = "@order_history";
 
 const carddata = [
-  { id: 1, Title: 'Beware of pet' },
+  { id: 1, Title: "Beware of pet" },
   { id: 2, Title: "Don't ring the bell" },
   { id: 3, Title: "Don't contact" },
 ];
@@ -45,56 +44,58 @@ const CartScreen = () => {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
 
-  const [addressType, setAddressType] = useState('Home');
-  const [flatNo, setFlatNo] = useState('');
-  const [buildingName, setBuildingName] = useState('');
-  const [landmark, setLandmark] = useState('');
-  const [receiverName, setReceiverName] = useState('');
-  const [receiverNumber, setReceiverNumber] = useState('');
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
-  const [pincode, setPincode] = useState('');
+  const [addressType, setAddressType] = useState("Home");
+  const [flatNo, setFlatNo] = useState("");
+  const [buildingName, setBuildingName] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [receiverName, setReceiverName] = useState("");
+  const [receiverNumber, setReceiverNumber] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [pincode, setPincode] = useState("");
 
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [showCouponsModal, setShowCouponsModal] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
+  const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
   const [couponsLoading, setCouponsLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
-  
 
   const [loadingApi, setLoadingApi] = useState(false);
   const [addressesList, setAddressesList] = useState<any[]>([]);
-  const [editingAddressId, setEditingAddressId] = useState<string | number | null>(null);
+  const [editingAddressId, setEditingAddressId] = useState<
+    string | number | null
+  >(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showAllOtherAddresses, setShowAllOtherAddresses] = useState(true);
 
   const [recentlyAddedProduct, setRecentlyAddedProduct] = useState<any>(null);
 
   const [showPaymentMethodModal, setShowPaymentMethodModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] =
-    useState<'cod' | 'card'>('cod');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);  
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardHolderName, setCardHolderName] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
+    "cod" | "card"
+  >("cod");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolderName, setCardHolderName] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvv, setCvv] = useState("");
 
   // ------------- CART APIs -------------
 
   const fetchCartItems = async () => {
     try {
       setLoadingApi(true);
-      const res = await cartApi.get('api/cart/byId');
+      const res = await cartApi.get("api/cart/byId");
 
       const items =
         res.data?.items?.map((item: any) => ({
           id: item.id,
           productId: item.pid,
           name: item.pname,
-          pack: '',
+          pack: "",
           price: item.actualPrice,
           originalPrice: item.price,
           quantity: item.quantity,
@@ -113,8 +114,8 @@ const CartScreen = () => {
         setAppliedDiscount(0);
       }
     } catch (e: any) {
-      console.log('fetchCartItems error:', e.response?.data || e.message);
-      Alert.alert('Error', 'Failed to load cart');
+      console.log("fetchCartItems error:", e.response?.data || e.message);
+      Alert.alert("Error", "Failed to load cart");
     } finally {
       setLoadingApi(false);
     }
@@ -123,12 +124,12 @@ const CartScreen = () => {
   const addItemToCart = async (products: any, quantity = 1) => {
     try {
       setIsProcessing(true);
-      await cartApi.post('api/cart/add', { pid: products.id, quantity });
+      await cartApi.post("api/cart/add", { pid: products.id, quantity });
       await fetchCartItems();
-      Alert.alert('Success', 'Item added to cart');
+      Alert.alert("Success", "Item added to cart");
     } catch (e: any) {
-      console.log('addItemToCart error:', e.response?.data || e.message || e);
-      Alert.alert('Error', 'Failed to add to cart');
+      console.log("addItemToCart error:", e.response?.data || e.message || e);
+      Alert.alert("Error", "Failed to add to cart");
     } finally {
       setIsProcessing(false);
     }
@@ -136,31 +137,34 @@ const CartScreen = () => {
 
   const updateCartItemQuantity = async (itemId: any, newQty: number) => {
     const prev = cartItems;
-    setCartItems(items =>
-      items.map(it => (it.id === itemId ? { ...it, quantity: newQty } : it)),
+    setCartItems((items) =>
+      items.map((it) => (it.id === itemId ? { ...it, quantity: newQty } : it))
     );
     try {
       await cartApi.put(
         `api/cart/item/${itemId}/quantity`,
         {},
-        { params: { quantity: newQty } },
+        { params: { quantity: newQty } }
       );
     } catch (e: any) {
-      console.log('updateCartItemQuantity error:', e.response?.data || e.message || e);
+      console.log(
+        "updateCartItemQuantity error:",
+        e.response?.data || e.message || e
+      );
       setCartItems(prev);
-      Alert.alert('Error', 'Failed to update quantity');
+      Alert.alert("Error", "Failed to update quantity");
     }
   };
 
   const deleteCartItem = async (itemId: any) => {
     const prev = cartItems;
-    setCartItems(items => items.filter(it => it.id !== itemId));
+    setCartItems((items) => items.filter((it) => it.id !== itemId));
     try {
       await cartApi.delete(`api/cart/item/${itemId}`);
     } catch (e: any) {
-      console.log('deleteCartItem error:', e.response?.data || e.message || e);
+      console.log("deleteCartItem error:", e.response?.data || e.message || e);
       setCartItems(prev);
-      Alert.alert('Error', 'Failed to delete item');
+      Alert.alert("Error", "Failed to delete item");
     }
   };
 
@@ -171,13 +175,13 @@ const CartScreen = () => {
     setCartData(null);
     setRecentlyAddedProduct(null);
     try {
-      await cartApi.delete('api/cart/clear');
-      await AsyncStorage.removeItem('recentlyAddedProduct');
+      await cartApi.delete("api/cart/clear");
+      await AsyncStorage.removeItem("recentlyAddedProduct");
     } catch (e: any) {
-      console.log('clearCart error:', e.response?.data || e.message || e);
+      console.log("clearCart error:", e.response?.data || e.message || e);
       setCartItems(prevItems);
       setCartData(prevData);
-      Alert.alert('Error', 'Failed to clear cart');
+      Alert.alert("Error", "Failed to clear cart");
     }
   };
 
@@ -186,142 +190,141 @@ const CartScreen = () => {
   const fetchAvailableCoupon = useCallback(async () => {
     try {
       setCouponsLoading(true);
-      const res = await cartApi.get('api/cart/coupons/all');
-      
+      const res = await cartApi.get("api/cart/coupons/all");
+
       // Format coupon data properly
       const formattedCoupons = (res.data || []).map((coupon: any) => ({
         id: coupon.id || coupon._id,
-        code: coupon.code || '',
+        code: coupon.code || "",
         description: coupon.description || getCouponDescription(coupon),
-        type: coupon.type || 'fixed',
-        discountValue: coupon.discountValue || coupon.discount || coupon.minSavings || 0,
+        type: coupon.type || "fixed",
+        discountValue:
+          coupon.discountValue || coupon.discount || coupon.minSavings || 0,
         percent: coupon.percent || coupon.discountPercent || 0,
         maxDiscount: coupon.maxDiscount || coupon.maxSavings || 0,
         minOrder: coupon.minOrder || coupon.minimumOrder || 0,
-        title: coupon.title || coupon.name || '',
+        title: coupon.title || coupon.name || "",
       }));
-      
+
       setAvailableCoupons(formattedCoupons);
     } catch (e: any) {
-      console.log('fetchAvailableCoupons error', e.response?.data || e.message);
-      Alert.alert('Error', 'Failed to load coupons');
+      console.log("fetchAvailableCoupons error", e.response?.data || e.message);
+      Alert.alert("Error", "Failed to load coupons");
     } finally {
       setCouponsLoading(false);
     }
   }, []);
 
-  //saved order 
+  //saved order
   const saveOrderToHistory = async (order: any) => {
-  try {
-    const raw = await AsyncStorage.getItem(ORDER_HISTORY_KEY);
-    const existingOrders = raw ? JSON.parse(raw) : [];
-    const updatedOrders = [order, ...existingOrders];
-    await AsyncStorage.setItem(
-      ORDER_HISTORY_KEY,
-      JSON.stringify(updatedOrders)
-    );
-  } catch (e) {
-    console.log('Order history save failed', e);
-  }
-};
-
+    try {
+      const raw = await AsyncStorage.getItem(ORDER_HISTORY_KEY);
+      const existingOrders = raw ? JSON.parse(raw) : [];
+      const updatedOrders = [order, ...existingOrders];
+      await AsyncStorage.setItem(
+        ORDER_HISTORY_KEY,
+        JSON.stringify(updatedOrders)
+      );
+    } catch (e) {
+      console.log("Order history save failed", e);
+    }
+  };
 
   // Helper function to get coupon description
   const getCouponDescription = (coupon: any) => {
     if (coupon.description) return coupon.description;
-    
-    const type = coupon.type || 'fixed';
-    const discountValue = coupon.discountValue || coupon.discount || coupon.minSavings || 0;
+
+    const type = coupon.type || "fixed";
+    const discountValue =
+      coupon.discountValue || coupon.discount || coupon.minSavings || 0;
     const percent = coupon.percent || coupon.discountPercent || 0;
     const maxDiscount = coupon.maxDiscount || coupon.maxSavings || 0;
     const minOrder = coupon.minOrder || coupon.minimumOrder || 0;
-    
-    if (type === 'percent') {
+
+    if (type === "percent") {
       if (maxDiscount > 0) {
         return `${percent}% off up to ₹${maxDiscount}`;
       }
       return `${percent}% off`;
-    } else if (type === 'fixed_range' || type === 'fixed') {
+    } else if (type === "fixed_range" || type === "fixed") {
       if (minOrder > 0) {
         return `Get ₹${discountValue} off on orders above ₹${minOrder}`;
       }
       return `Get ₹${discountValue} off`;
     }
-    
-    return 'Discount coupon';
+
+    return "Discount coupon";
   };
 
   // Helper function to get coupon display title
   const getCouponDisplayTitle = (coupon: any) => {
-    const type = coupon.type || 'fixed';
-    const discountValue = coupon.discountValue || coupon.discount || coupon.minSavings || 0;
+    const type = coupon.type || "fixed";
+    const discountValue =
+      coupon.discountValue || coupon.discount || coupon.minSavings || 0;
     const percent = coupon.percent || coupon.discountPercent || 0;
     const maxDiscount = coupon.maxDiscount || coupon.maxSavings || 0;
-    
-    if (type === 'percent') {
+
+    if (type === "percent") {
       if (maxDiscount > 0) {
         return `${percent}% off`;
       }
       return `${percent}% off`;
-    } else if (type === 'fixed_range' || type === 'fixed') {
+    } else if (type === "fixed_range" || type === "fixed") {
       return `₹${discountValue} off`;
     }
-    
-    return 'Discount';
+
+    return "Discount";
   };
 
-  const applyCoupon = useCallback(
-    async (code: string) => {
-      try {
-        setIsProcessing(true);
-        setCouponError(null);
+  const applyCoupon = useCallback(async (code: string) => {
+    try {
+      setIsProcessing(true);
+      setCouponError(null);
 
-        const res = await cartApi.post(`api/cart/apply-coupon/${code}`);
+      const res = await cartApi.post(`api/cart/apply-coupon/${code}`);
 
-        if (res.data) {
-          setCartData(res.data);
+      if (res.data) {
+        setCartData(res.data);
 
-          const items =
-            res.data?.items?.map((item: any) => ({
-              id: item.id,
-              productId: item.pid,
-              name: item.pname,
-              pack: '',
-              price: item.price,
-              originalPrice: item.actualPrice,
-              quantity: item.quantity,
-              image: item.imagePath,
-            })) || [];
-          setCartItems(items);
+        const items =
+          res.data?.items?.map((item: any) => ({
+            id: item.id,
+            productId: item.pid,
+            name: item.pname,
+            pack: "",
+            price: item.price,
+            originalPrice: item.actualPrice,
+            quantity: item.quantity,
+            image: item.imagePath,
+          })) || [];
+        setCartItems(items);
 
-          if (res.data.appliedCoupon) {
-            setAppliedCoupon(res.data.appliedCoupon);
-            setAppliedDiscount(res.data.discountAmount || 0);
-            setCouponCode(res.data.appliedCoupon?.code || '');
-            Alert.alert(
-              'Success',
-              `Coupon ${code} applied successfully. Discount: ₹${
-                res.data.discountAmount || 0
-              }`,
-            );
-          }
+        if (res.data.appliedCoupon) {
+          setAppliedCoupon(res.data.appliedCoupon);
+          setAppliedDiscount(res.data.discountAmount || 0);
+          setCouponCode(res.data.appliedCoupon?.code || "");
+          Alert.alert(
+            "Success",
+            `Coupon ${code} applied successfully. Discount: ₹${
+              res.data.discountAmount || 0
+            }`
+          );
         }
-      } catch (e: any) {
-        console.log('applycoupon error', e.response?.data || e.message);
-        const errorMsg = e.response?.data?.message || 'Failed to apply coupon';
-        setCouponError(errorMsg);
-        Alert.alert('Error', errorMsg);
-      } finally {
-        setIsProcessing(false);
       }
-    },
-    [],
-  );
+    } catch (e: any) {
+      console.log("applycoupon error", e.response?.data || e.message);
+      const errorMsg = e.response?.data?.message || "Failed to apply coupon";
+      setCouponError(errorMsg);
+      Alert.alert("Error", errorMsg);
+    } finally {
+      setIsProcessing(false);
+    }
+  }, []);
 
   const removeCoupon = async () => {
     try {
       setIsProcessing(true);
-      const res = await cartApi.delete('api/cart/remove-coupon');
+      const res = await cartApi.delete("api/cart/remove-coupon");
 
       if (res.data) {
         setCartData(res.data);
@@ -330,7 +333,7 @@ const CartScreen = () => {
             id: item.id,
             productId: item.pid,
             name: item.pname,
-            pack: '',
+            pack: "",
             price: item.price,
             originalPrice: item.actualPrice,
             quantity: item.quantity,
@@ -340,13 +343,13 @@ const CartScreen = () => {
 
         setAppliedCoupon(null);
         setAppliedDiscount(0);
-        setCouponCode('');
+        setCouponCode("");
         setCouponError(null);
-        Alert.alert('Success', 'Coupon removed successfully');
+        Alert.alert("Success", "Coupon removed successfully");
       }
     } catch (e: any) {
-      console.log('removeCoupon error', e.response?.data || e.message);
-      Alert.alert('Error', 'Failed to remove coupon');
+      console.log("removeCoupon error", e.response?.data || e.message);
+      Alert.alert("Error", "Failed to remove coupon");
     } finally {
       setIsProcessing(false);
     }
@@ -355,142 +358,144 @@ const CartScreen = () => {
   // ------------- PAYMENT -------------
 
   const resetPaymentForm = () => {
-    setCardNumber('');
-    setCardHolderName('');
-    setExpiryDate('');
-    setCvv('');
-    setSelectedPaymentMethod('cod');
+    setCardNumber("");
+    setCardHolderName("");
+    setExpiryDate("");
+    setCvv("");
+    setSelectedPaymentMethod("cod");
   };
 
- const processPaymentCheckout = async (
-  paymentMethod: 'cod' | 'card',
-  paymentDetails?: {
-    cardNumber: string;
-    cardHolderName: string;
-    expiryDate: string;
-    cvv: string;
-  },
-) => {
-  try {
-    setIsProcessing(true);
+  const processPaymentCheckout = async (
+    paymentMethod: "cod" | "card",
+    paymentDetails?: {
+      cardNumber: string;
+      cardHolderName: string;
+      expiryDate: string;
+      cvv: string;
+    }
+  ) => {
+    try {
+      setIsProcessing(true);
 
-    const orderPayload: any = {
-      addressId: selectedAddress?.id,
-      deliveryInstructions: selectedCards
-        .map(id => {
-          const card = carddata.find(c => c.id === id);
-          return card?.Title || '';
-        })
-        .filter(Boolean),
-      couponCode: appliedCoupon?.code || null,
-    };
-
-    let response;
-
-    if (paymentMethod === 'card') {
-      const payload = {
-        cardNumber: paymentDetails?.cardNumber,
-        cardHolderName: paymentDetails?.cardHolderName,
-        expiryDate: paymentDetails?.expiryDate,
-        cvv: paymentDetails?.cvv,
+      const orderPayload: any = {
+        addressId: selectedAddress?.id,
+        deliveryInstructions: selectedCards
+          .map((id) => {
+            const card = carddata.find((c) => c.id === id);
+            return card?.Title || "";
+          })
+          .filter(Boolean),
+        couponCode: appliedCoupon?.code || null,
       };
 
-      response = await payApi.post('api/cart/pay-checkout', payload);
-    } else {
-      response = await payApi.post('api/cart/cod-checkout', orderPayload);
+      let response;
+
+      if (paymentMethod === "card") {
+        const payload = {
+          cardNumber: paymentDetails?.cardNumber,
+          cardHolderName: paymentDetails?.cardHolderName,
+          expiryDate: paymentDetails?.expiryDate,
+          cvv: paymentDetails?.cvv,
+        };
+
+        response = await payApi.post("api/cart/pay-checkout", payload);
+      } else {
+        response = await payApi.post("api/cart/cod-checkout", orderPayload);
+      }
+
+      // ✅ CREATE ORDER OBJECT (🔥 NEW)
+      const orderObject = {
+        orderId: Date.now(),
+        orderDate: new Date().toISOString(),
+        status: "confirmed",
+        paymentMethod,
+        items: cartItems.map((item) => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+        })),
+        totalAmount: finalPayable,
+        couponDiscount: couponDiscount,
+        address: selectedAddress,
+        deliveryInstructions: selectedCards
+          .map((id) => {
+            const card = carddata.find((c) => c.id === id);
+            return card?.Title;
+          })
+          .filter(Boolean),
+      };
+
+      await saveOrderToHistory(orderObject);
+      await clearCart();
+      //added this except of alert
+
+      setShowSuccessModal(true);
+      //     Alert.alert(
+      //   'Order Placed!',
+      //   'Your order has been placed successfully.',
+      //   [
+      //     {
+      //       text: 'View Orders',
+      //       onPress: () => router.push('/(customer)/profile'),
+      //     },
+      //   ]
+      // );
+
+      return true;
+    } catch (e: any) {
+      console.log(
+        "Payment checkout error:",
+        e.response?.data || e.message || e
+      );
+      const errorMsg = e.response?.data?.message || "Failed to process payment";
+      Alert.alert("Payment Failed", errorMsg);
+      return false;
+    } finally {
+      setIsProcessing(false);
+      setShowPaymentMethodModal(false);
+      resetPaymentForm();
     }
-    
-    const orderObject = {
-      orderId: Date.now(),
-      orderDate: new Date().toISOString(),
-      status: 'confirmed',
-      paymentMethod,
-      items: cartItems.map(item => ({
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
-      })),
-      totalAmount: finalPayable,
-      couponDiscount: couponDiscount,
-      address: selectedAddress,
-      deliveryInstructions: selectedCards
-        .map(id => {
-          const card = carddata.find(c => c.id === id);
-          return card?.Title;
-        })
-        .filter(Boolean),
-    };
-
-    await saveOrderToHistory(orderObject);
-    await clearCart();
-    //added this except of alert
-
-    setShowSuccessModal(true);
-//     Alert.alert(
-//   'Order Placed!',
-//   'Your order has been placed successfully.',
-//   [
-//     {
-//       text: 'View Orders',
-//       onPress: () => router.push('/(customer)/profile'),
-//     },
-//   ]
-// );
-
-
-    return true;
-  } catch (e: any) {
-    console.log('Payment checkout error:', e.response?.data || e.message || e);
-    const errorMsg = e.response?.data?.message || 'Failed to process payment';
-    Alert.alert('Payment Failed', errorMsg);
-    return false;
-  } finally {
-    setIsProcessing(false);
-    setShowPaymentMethodModal(false);
-    resetPaymentForm();
-  }
-};
-
+  };
 
   const validateCardDetails = () => {
-    const cleanedCardNumber = cardNumber.replace(/\s/g, '');
+    const cleanedCardNumber = cardNumber.replace(/\s/g, "");
 
     if (!cleanedCardNumber.trim()) {
-      Alert.alert('Validation Error', 'Please enter card number');
+      Alert.alert("Validation Error", "Please enter card number");
       return false;
     }
 
     if (cleanedCardNumber.length !== 16) {
-      Alert.alert('Validation Error', 'Card number must be 16 digits');
+      Alert.alert("Validation Error", "Card number must be 16 digits");
       return false;
     }
 
     if (!/^\d+$/.test(cleanedCardNumber)) {
-      Alert.alert('Validation Error', 'Card number must contain only numbers');
+      Alert.alert("Validation Error", "Card number must contain only numbers");
       return false;
     }
 
     if (!cardHolderName.trim()) {
-      Alert.alert('Validation Error', 'Please enter card holder name');
+      Alert.alert("Validation Error", "Please enter card holder name");
       return false;
     }
 
     if (!expiryDate.trim()) {
-      Alert.alert('Validation Error', 'Please enter expiry date (MM/YY)');
+      Alert.alert("Validation Error", "Please enter expiry date (MM/YY)");
       return false;
     }
 
     const expiryRegex = /^(0[1-9]|1[0-2])\/([0-9]{2})$/;
     if (!expiryRegex.test(expiryDate)) {
       Alert.alert(
-        'Validation Error',
-        'Please enter valid expiry date in MM/YY format',
+        "Validation Error",
+        "Please enter valid expiry date in MM/YY format"
       );
       return false;
     }
 
-    const [month, year] = expiryDate.split('/');
+    const [month, year] = expiryDate.split("/");
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() % 100;
     const currentMonth = currentDate.getMonth() + 1;
@@ -498,18 +503,21 @@ const CartScreen = () => {
     const expYear = parseInt(year, 10);
     const expMonth = parseInt(month, 10);
 
-    if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
-      Alert.alert('Validation Error', 'Card has expired');
+    if (
+      expYear < currentYear ||
+      (expYear === currentYear && expMonth < currentMonth)
+    ) {
+      Alert.alert("Validation Error", "Card has expired");
       return false;
     }
 
     if (!cvv.trim()) {
-      Alert.alert('Validation Error', 'Please enter CVV');
+      Alert.alert("Validation Error", "Please enter CVV");
       return false;
     }
 
     if (cvv.length !== 3 || !/^\d+$/.test(cvv)) {
-      Alert.alert('Validation Error', 'CVV must be 3 digits');
+      Alert.alert("Validation Error", "CVV must be 3 digits");
       return false;
     }
 
@@ -517,20 +525,20 @@ const CartScreen = () => {
   };
 
   const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
-    const match = (matches && matches[0]) || '';
+    const match = (matches && matches[0]) || "";
     const parts: string[] = [];
 
     for (let i = 0; i < match.length; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
 
-    return parts.length ? parts.join(' ') : value;
+    return parts.length ? parts.join(" ") : value;
   };
 
   const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     if (v.length >= 2) {
       return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
     }
@@ -547,26 +555,26 @@ const CartScreen = () => {
         setSelectedAddress(saved);
       }
     } catch (e) {
-      console.warn('Failed to load saved address:', e);
+      console.warn("Failed to load saved address:", e);
     }
   };
 
   const fetchAddressesFromApi = async () => {
     setLoadingApi(true);
     try {
-      const res = await adressApi.get('/address/all');
+      const res = await adressApi.get("/address/all");
       if (res.data && Array.isArray(res.data)) {
         const formatted = res.data.map((addr: any) => ({
           id: addr.id || addr._id || addr.addressId,
-          title: addr.title || addr.addressType || 'Home',
-          house: addr.house || addr.houseNo || addr.flatNo || '',
-          street: addr.street || addr.buildingName || '',
-          landmark: addr.landmark || '',
-          city: addr.city || '',
-          state: addr.state || '',
-          pincode: addr.pincode || addr.pinCode || '',
-          name: addr.name || addr.receiverName || '',
-          phone: addr.phone || addr.receiverNumber || '',
+          title: addr.title || addr.addressType || "Home",
+          house: addr.house || addr.houseNo || addr.flatNo || "",
+          street: addr.street || addr.buildingName || "",
+          landmark: addr.landmark || "",
+          city: addr.city || "",
+          state: addr.state || "",
+          pincode: addr.pincode || addr.pinCode || "",
+          name: addr.name || addr.receiverName || "",
+          phone: addr.phone || addr.receiverNumber || "",
         }));
 
         setAddressesList(formatted);
@@ -578,29 +586,32 @@ const CartScreen = () => {
         }
 
         if (savedParsed && savedParsed.id) {
-          const found = formatted.find(a => a.id === savedParsed.id);
+          const found = formatted.find((a) => a.id === savedParsed.id);
           if (found) {
             setSelectedAddress(found);
           } else if (formatted.length > 0) {
             setSelectedAddress(formatted[0]);
             await AsyncStorage.setItem(
               STORAGE_ADDRESS,
-              JSON.stringify(formatted[0]),
+              JSON.stringify(formatted[0])
             );
           }
         } else if (!selectedAddress && formatted.length > 0) {
           setSelectedAddress(formatted[0]);
           await AsyncStorage.setItem(
             STORAGE_ADDRESS,
-            JSON.stringify(formatted[0]),
+            JSON.stringify(formatted[0])
           );
         }
       } else {
         setAddressesList([]);
       }
     } catch (e: any) {
-      console.error('Error fetching addresses:', e.response?.data || e.message || e);
-      Alert.alert('Error', 'Failed to load addresses. Please try again.');
+      console.error(
+        "Error fetching addresses:",
+        e.response?.data || e.message || e
+      );
+      Alert.alert("Error", "Failed to load addresses. Please try again.");
     } finally {
       setLoadingApi(false);
     }
@@ -613,7 +624,7 @@ const CartScreen = () => {
       if (editingAddressId) {
         res = await adressApi.put(`/address/update/${editingAddressId}`, addressData);
       } else {
-        res = await adressApi.post('/address/add', addressData);
+        res = await adressApi.post("/address/add", addressData);
       }
 
       if (res.data) {
@@ -632,11 +643,11 @@ const CartScreen = () => {
         };
         return formatted;
       }
-      throw new Error('No data in response');
+      throw new Error("No data in response");
     } catch (e: any) {
-      console.error('Save address error:', e.response?.data || e.message || e);
+      console.error("Save address error:", e.response?.data || e.message || e);
       throw new Error(
-        e.response?.data?.message || e.message || 'Failed to save address',
+        e.response?.data?.message || e.message || "Failed to save address"
       );
     } finally {
       setIsProcessing(false);
@@ -648,13 +659,13 @@ const CartScreen = () => {
       setIsProcessing(true);
       await adressApi.delete(`/address/delete/${id}`);
 
-      setAddressesList(prev => prev.filter(a => a.id !== id));
+      setAddressesList((prev) => prev.filter((a) => a.id !== id));
 
-      setSelectedAddress(prevSelected => {
+      setSelectedAddress((prevSelected) => {
         if (!prevSelected || prevSelected.id !== id) return prevSelected;
 
         // fresh remaining list
-        const remaining = addressesList.filter(a => a.id !== id);
+        const remaining = addressesList.filter((a) => a.id !== id);
         const next = remaining[0] || null;
 
         if (next) {
@@ -665,31 +676,31 @@ const CartScreen = () => {
         return next;
       });
 
-      Alert.alert('Success', 'Address deleted');
+      Alert.alert("Success", "Address deleted");
     } catch (e: any) {
-      console.error('Delete API error:', e.response?.data || e.message || e);
-      Alert.alert('Error', e.message || 'Failed to delete address');
+      console.error("Delete API error:", e.response?.data || e.message || e);
+      Alert.alert("Error", e.message || "Failed to delete address");
     } finally {
       setIsProcessing(false);
     }
   };
 
   const resetAddressForm = () => {
-    setAddressType('Home');
-    setFlatNo('');
-    setBuildingName('');
-    setLandmark('');
-    setReceiverName('');
-    setReceiverNumber('');
-    setCity('');
-    setState('');
-    setPincode('');
+    setAddressType("Home");
+    setFlatNo("");
+    setBuildingName("");
+    setLandmark("");
+    setReceiverName("");
+    setReceiverNumber("");
+    setCity("");
+    setState("");
+    setPincode("");
     setEditingAddressId(null);
   };
 
   const handleSaveAddress = async () => {
     if (!flatNo || !buildingName || !city || !state || !pincode) {
-      Alert.alert('Validation', 'Please fill all required fields');
+      Alert.alert("Validation", "Please fill all required fields");
       return;
     }
 
@@ -697,21 +708,21 @@ const CartScreen = () => {
       title: addressType,
       house: flatNo,
       street: buildingName,
-      landmark: landmark || '',
+      landmark: landmark || "",
       city,
       state,
       pincode,
-      name: receiverName || '',
-      phone: receiverNumber || '',
+      name: receiverName || "",
+      phone: receiverNumber || "",
     };
 
     try {
       const saved = await saveAddressToApi(payload);
 
-      setAddressesList(prev => {
+      setAddressesList((prev) => {
         if (editingAddressId) {
           // update existing
-          return prev.map(a => (a.id === saved.id ? saved : a));
+          return prev.map((a) => (a.id === saved.id ? saved : a));
         }
         // add new
         return [...prev, saved];
@@ -722,10 +733,10 @@ const CartScreen = () => {
 
       resetAddressForm();
       setShowAddressModal(false);
-      Alert.alert('Success', 'Address saved successfully');
+      Alert.alert("Success", "Address saved successfully");
     } catch (e: any) {
-      console.error('Handle save address error:', e);
-      Alert.alert('Error', e.message || 'Failed to save address');
+      console.error("Handle save address error:", e);
+      Alert.alert("Error", e.message || "Failed to save address");
     }
   };
 
@@ -742,15 +753,15 @@ const CartScreen = () => {
 
   const openEditAddressModal = (address: any) => {
     if (!address) return;
-    setAddressType(address.title || 'Home');
-    setFlatNo(address.house || '');
-    setBuildingName(address.street || '');
-    setLandmark(address.landmark || '');
-    setReceiverName(address.name || '');
-    setReceiverNumber(address.phone || '');
-    setCity(address.city || '');
-    setState(address.state || '');
-    setPincode(address.pincode || '');
+    setAddressType(address.title || "Home");
+    setFlatNo(address.house || "");
+    setBuildingName(address.street || "");
+    setLandmark(address.landmark || "");
+    setReceiverName(address.name || "");
+    setReceiverNumber(address.phone || "");
+    setCity(address.city || "");
+    setState(address.state || "");
+    setPincode(address.pincode || "");
     setEditingAddressId(address.id);
     setShowAddressModal(true);
   };
@@ -759,14 +770,14 @@ const CartScreen = () => {
 
   const loadRecentlyAddedProduct = async () => {
     try {
-      const stored = await AsyncStorage.getItem('recentlyAddedProduct');
+      const stored = await AsyncStorage.getItem("recentlyAddedProduct");
       if (stored) {
         setRecentlyAddedProduct(JSON.parse(stored));
       } else {
         setRecentlyAddedProduct(null);
       }
     } catch (e) {
-      console.log('Error loading recentlyAddedProduct:', e);
+      console.log("Error loading recentlyAddedProduct:", e);
       setRecentlyAddedProduct(null);
     }
   };
@@ -795,36 +806,36 @@ const CartScreen = () => {
   }, [passedProduct]);
 
   const toggleCardSelection = (id: number) => {
-    setSelectedCards(prev =>
-      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id],
+    setSelectedCards((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
     );
   };
 
   const MemoCard = memo(({ item, isSelected, onPress }: any) => {
-    let iconName: any = 'information-circle-outline';
+    let iconName: any = "information-circle-outline";
 
-    if (item.Title === 'Beware of pet') iconName = 'paw-outline';
+    if (item.Title === "Beware of pet") iconName = "paw-outline";
     else if (item.Title === "Don't ring the bell")
-      iconName = 'notifications-off-outline';
-    else if (item.Title === "Don't contact") iconName = 'hand-left-outline';
+      iconName = "notifications-off-outline";
+    else if (item.Title === "Don't contact") iconName = "hand-left-outline";
 
     return (
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={onPress}
         className={`bg-white mx-2 w-48 h-32 justify-center items-center shadow-sm border ${
-          isSelected ? 'border-[#e6005c] bg-[#fff0f4]' : 'border-gray-200'
+          isSelected ? "border-[#e6005c] bg-[#fff0f4]" : "border-gray-200"
         } px-3`}
       >
         <Ionicons
           name={iconName}
           size={30}
-          color={isSelected ? '#e6005c' : '#555'}
+          color={isSelected ? "#e6005c" : "#555"}
           style={{ marginBottom: 8 }}
         />
         <Text
           className={`text-base font-bold text-center ${
-            isSelected ? 'text-[#e6005c]' : 'text-black'
+            isSelected ? "text-[#e6005c]" : "text-black"
           }`}
         >
           {item.Title}
@@ -848,7 +859,7 @@ const CartScreen = () => {
     <FlatList
       data={carddata}
       renderItem={renderCard}
-      keyExtractor={item => String(item.id)}
+      keyExtractor={(item) => String(item.id)}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 8 }}
@@ -856,7 +867,7 @@ const CartScreen = () => {
   );
 
   const changeQuantity = async (id: any, change: number) => {
-    const current = cartItems.find(it => it.id === id);
+    const current = cartItems.find((it) => it.id === id);
     if (!current) return;
     const newQty = Math.max(1, current.quantity + change);
     await updateCartItemQuantity(id, newQty);
@@ -866,25 +877,20 @@ const CartScreen = () => {
 
   // Get subtotal from cartData or calculate from items
   const getSubtotal = () => {
-  if (cartItems.length === 0) return 0;
+    if (cartItems.length === 0) return 0;
 
-  return cartItems.reduce(
-    (sum, item) =>
-      sum + (item.originalPrice || item.price) * item.quantity,
-    0
-  );
-};
-
+    return cartItems.reduce(
+      (sum, item) => sum + (item.originalPrice || item.price) * item.quantity,
+      0
+    );
+  };
 
   // Get discounted total (after item discounts but before coupon)
- const getDiscountedTotal = () => {
-  if (cartItems.length === 0) return 0;
+  const getDiscountedTotal = () => {
+    if (cartItems.length === 0) return 0;
 
-  return cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-};
+    return cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  };
 
   // Get coupon discount from cartData or appliedDiscount
   const getCouponDiscount = () => {
@@ -892,38 +898,37 @@ const CartScreen = () => {
   };
 
   // Get final payable amount
- const getFinalPayable = () => {
-  const discountedTotal = getDiscountedTotal();
-  const couponDiscount = getCouponDiscount();
+  const getFinalPayable = () => {
+    const discountedTotal = getDiscountedTotal();
+    const couponDiscount = getCouponDiscount();
 
-  return Math.max(0, discountedTotal - couponDiscount);
-};
-
+    return Math.max(0, discountedTotal - couponDiscount);
+  };
 
   const applyCouponObj = (coupon: any) => {
     if (!coupon) {
-      Alert.alert('Error', 'Invalid coupon');
+      Alert.alert("Error", "Invalid coupon");
       return;
     }
-    
+
     const discountedTotal = getDiscountedTotal();
-    
+
     if (coupon.minOrder && discountedTotal < coupon.minOrder) {
       Alert.alert(
-        'Minimum Order Required',
-        `Offer applicable on total payable amount above ₹${coupon.minOrder}.`,
+        "Minimum Order Required",
+        `Offer applicable on total payable amount above ₹${coupon.minOrder}.`
       );
       return;
     }
 
     let discount = 0;
-    if (coupon.type === 'fixed_range' || coupon.type === 'fixed') {
-      discount = coupon.discountValue || coupon.minSavings || coupon.discount || 0;
-    } else if (coupon.type === 'percent') {
+    if (coupon.type === "fixed_range" || coupon.type === "fixed") {
+      discount =
+        coupon.discountValue || coupon.minSavings || coupon.discount || 0;
+    } else if (coupon.type === "percent") {
       discount = Math.floor(
-        (discountedTotal *
-          (coupon.percent || coupon.discountPercent || 0)) /
-          100,
+        (discountedTotal * (coupon.percent || coupon.discountPercent || 0)) /
+          100
       );
       if (coupon.maxDiscount && discount > coupon.maxDiscount) {
         discount = coupon.maxDiscount;
@@ -936,26 +941,25 @@ const CartScreen = () => {
   };
 
   const applyCouponByCode = () => {
-    const code = (couponCode || '').trim().toUpperCase();
+    const code = (couponCode || "").trim().toUpperCase();
     if (!code) {
-      Alert.alert('Error', 'Enter coupon code');
+      Alert.alert("Error", "Enter coupon code");
       return;
     }
     const found = availableCoupons.find(
-      (c: any) => c.code.toUpperCase() === code,
+      (c: any) => c.code.toUpperCase() === code
     );
     if (!found) {
-      Alert.alert('Error', 'Invalid coupon code');
+      Alert.alert("Error", "Invalid coupon code");
       return;
     }
     applyCoupon(found.code);
     setShowCouponsModal(false);
-
   };
 
   const renderOtherAddresses = () => {
     const otherAddresses = addressesList.filter(
-      addr => !selectedAddress || addr.id !== selectedAddress.id,
+      (addr) => !selectedAddress || addr.id !== selectedAddress.id
     );
     if (otherAddresses.length === 0) return null;
 
@@ -966,12 +970,10 @@ const CartScreen = () => {
             Other Addresses
           </Text>
           <TouchableOpacity
-            onPress={() =>
-              setShowAllOtherAddresses(!showAllOtherAddresses)
-            }
+            onPress={() => setShowAllOtherAddresses(!showAllOtherAddresses)}
           >
             <Ionicons
-              name={showAllOtherAddresses ? 'chevron-up' : 'chevron-down'}
+              name={showAllOtherAddresses ? "chevron-up" : "chevron-down"}
               size={20}
               color="#666"
             />
@@ -979,7 +981,7 @@ const CartScreen = () => {
         </View>
 
         {showAllOtherAddresses &&
-          otherAddresses.map(address => (
+          otherAddresses.map((address) => (
             <TouchableOpacity
               key={address.id}
               className="bg-gray-50 p-3 mb-2 border border-gray-200"
@@ -988,7 +990,7 @@ const CartScreen = () => {
               <View className="flex-1">
                 <View className="flex-row justify-between items-center mb-1">
                   <Text className="text-sm text-[#e6005c] font-semibold">
-                    {address.title || 'Address'}
+                    {address.title || "Address"}
                   </Text>
                   <TouchableOpacity
                     className="p-1"
@@ -1000,8 +1002,8 @@ const CartScreen = () => {
                   </TouchableOpacity>
                 </View>
                 <Text className="text-sm text-gray-800 leading-5 mb-1">
-                  {address.house || ''}, {address.street || ''}{' '}
-                  {address.city || ''}
+                  {address.house || ""}, {address.street || ""}{" "}
+                  {address.city || ""}
                 </Text>
                 {address.landmark ? (
                   <Text className="text-xs text-gray-600 italic">
@@ -1017,12 +1019,12 @@ const CartScreen = () => {
 
   const handlePaymentConfirmation = () => {
     if (!selectedAddress) {
-      Alert.alert('Error', 'Please select a delivery address');
+      Alert.alert("Error", "Please select a delivery address");
       return;
     }
 
     if (cartItems.length === 0) {
-      Alert.alert('Error', 'Your cart is empty');
+      Alert.alert("Error", "Your cart is empty");
       return;
     }
 
@@ -1030,19 +1032,19 @@ const CartScreen = () => {
   };
 
   const handlePaymentSubmission = async () => {
-    if (selectedPaymentMethod === 'cod') {
-      await processPaymentCheckout('cod');
+    if (selectedPaymentMethod === "cod") {
+      await processPaymentCheckout("cod");
     } else {
       if (!validateCardDetails()) return;
 
       const paymentDetails = {
-        cardNumber: cardNumber.replace(/\s/g, ''),
+        cardNumber: cardNumber.replace(/\s/g, ""),
         cardHolderName,
         expiryDate,
         cvv,
       };
 
-      await processPaymentCheckout('card', paymentDetails);
+      await processPaymentCheckout("card", paymentDetails);
     }
   };
 
@@ -1068,7 +1070,7 @@ const CartScreen = () => {
       >
         {/* CART ITEMS */}
         <View className="px-4 mb-3 mt-2">
-          {cartItems.map(item => (
+          {cartItems.map((item) => (
             <View
               key={item.id}
               className="flex-row mb-4 items-center border-b border-gray-100 pb-3"
@@ -1081,9 +1083,7 @@ const CartScreen = () => {
                 <Text className="text-base font-bold text-black mb-1">
                   {item.name}
                 </Text>
-                <Text className="text-sm text-gray-600 mb-2">
-                  {item.pack}
-                </Text>
+                <Text className="text-sm text-gray-600 mb-2">{item.pack}</Text>
                 <View className="flex-row items-center bg-white rounded border border-[#f4d8d8] self-start py-1 px-1.5">
                   <TouchableOpacity
                     className="px-2 py-1"
@@ -1149,15 +1149,13 @@ const CartScreen = () => {
                 <Text className="text-sm font-bold text-black mb-1">
                   ₹{recentlyAddedProduct.price}
                 </Text>
-                <Text className="text-xs text-gray-500">
-                  1 item • In cart
-                </Text>
+                <Text className="text-xs text-gray-500">1 item • In cart</Text>
               </View>
               <TouchableOpacity
                 className="py-2 px-3 rounded bg-gray-100"
                 onPress={async () => {
                   setRecentlyAddedProduct(null);
-                  await AsyncStorage.removeItem('recentlyAddedProduct');
+                  await AsyncStorage.removeItem("recentlyAddedProduct");
                 }}
               >
                 <Text className="text-xs font-semibold text-gray-700">
@@ -1176,7 +1174,7 @@ const CartScreen = () => {
           <TouchableOpacity
             className="flex-row items-center bg-[#e6005c] py-2.5 px-3.5 rounded"
             activeOpacity={0.9}
-            onPress={() => router.push('/(customer)/home')}
+            onPress={() => router.push("/(customer)/home")}
           >
             <Ionicons name="add" size={18} color="#fff" />
             <Text className="text-white font-bold text-sm ml-1">
@@ -1236,9 +1234,7 @@ const CartScreen = () => {
             <Text className="text-sm text-gray-600">Handling Fee:</Text>
             <View className="flex-row items-center">
               {/* SIRF CROSSED OUT PRICE - NO "FREE" TEXT */}
-              <Text className="text-sm text-gray-400 line-through">
-                ₹10.00
-              </Text>
+              <Text className="text-sm text-gray-400 line-through">₹10.00</Text>
             </View>
           </View>
 
@@ -1246,9 +1242,7 @@ const CartScreen = () => {
             <Text className="text-sm text-gray-600">Delivery Fee:</Text>
             <View className="flex-row items-center">
               {/* SIRF CROSSED OUT PRICE - NO "FREE" TEXT */}
-              <Text className="text-sm text-gray-400 line-through">
-                ₹30.00
-              </Text>
+              <Text className="text-sm text-gray-400 line-through">₹30.00</Text>
             </View>
           </View>
 
@@ -1258,17 +1252,13 @@ const CartScreen = () => {
               <View className="flex-row justify-between items-center my-2">
                 <View className="flex-row items-center">
                   <Text className="text-sm text-gray-600 mr-2">
-                    Coupon ({appliedCoupon?.code || 'Discount'})
+                    Coupon ({appliedCoupon?.code || "Discount"})
                   </Text>
                   <TouchableOpacity
                     onPress={removeCoupon}
                     disabled={isProcessing}
                   >
-                    <Ionicons
-                      name="close-circle"
-                      size={16}
-                      color="#ff4444"
-                    />
+                    <Ionicons name="close-circle" size={16} color="#ff4444" />
                   </TouchableOpacity>
                 </View>
                 <View className="flex-row items-center">
@@ -1307,11 +1297,7 @@ const CartScreen = () => {
         {/* Delivery Instruction */}
         <View className="mb-5">
           <View className="flex-row items-center mb-2 px-4">
-            <Ionicons
-              name="chatbox-ellipses-outline"
-              size={20}
-              color="#333"
-            />
+            <Ionicons name="chatbox-ellipses-outline" size={20} color="#333" />
             <Text className="text-lg font-bold ml-2 text-black">
               Delivery Instruction
             </Text>
@@ -1328,13 +1314,11 @@ const CartScreen = () => {
             <View className="flex-row items-start bg-[#fff8fb] p-3 border border-[#ffe5f0] mb-3 shadow-sm">
               <View className="flex-1">
                 <Text className="text-sm text-[#e6005c] font-bold mb-1">
-                  {selectedAddress.title || 'Address'} Address
+                  {selectedAddress.title || "Address"} Address
                 </Text>
                 <Text className="text-sm text-gray-800 mb-1 leading-4">
-                  {selectedAddress.house
-                    ? `${selectedAddress.house}, `
-                    : ''}
-                  {selectedAddress.street || ''}
+                  {selectedAddress.house ? `${selectedAddress.house}, ` : ""}
+                  {selectedAddress.street || ""}
                 </Text>
                 {selectedAddress.landmark ? (
                   <Text className="text-sm text-gray-800 mb-1 leading-4">
@@ -1342,19 +1326,17 @@ const CartScreen = () => {
                   </Text>
                 ) : null}
                 <Text className="text-sm text-gray-800 mb-1 leading-4">
-                  {selectedAddress.city
-                    ? `${selectedAddress.city}, `
-                    : ''}
-                  {selectedAddress.state || ''}
+                  {selectedAddress.city ? `${selectedAddress.city}, ` : ""}
+                  {selectedAddress.state || ""}
                   {selectedAddress.pincode
                     ? ` - ${selectedAddress.pincode}`
-                    : ''}
+                    : ""}
                 </Text>
                 <Text className="text-sm text-gray-800 mb-1 leading-4">
-                  Receiver: {selectedAddress.name || 'Not specified'}
+                  Receiver: {selectedAddress.name || "Not specified"}
                 </Text>
                 <Text className="text-sm text-gray-800 mb-1 leading-4">
-                  Phone: {selectedAddress.phone || 'Not specified'}
+                  Phone: {selectedAddress.phone || "Not specified"}
                 </Text>
               </View>
               <View className="ml-3 items-end">
@@ -1363,9 +1345,7 @@ const CartScreen = () => {
                   onPress={() => openEditAddressModal(selectedAddress)}
                   disabled={isProcessing}
                 >
-                  <Text className="text-[#e6005c] font-bold text-xs">
-                    Edit
-                  </Text>
+                  <Text className="text-[#e6005c] font-bold text-xs">Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="py-1.5 px-2.5 bg-[#fef2f2] rounded border border-[#fca5a5] min-w-[60px] items-center justify-center h-8"
@@ -1384,11 +1364,7 @@ const CartScreen = () => {
               onPress={openAddAddressModal}
               disabled={isProcessing}
             >
-              <Ionicons
-                name="add-circle-outline"
-                size={20}
-                color="#e6005c"
-              />
+              <Ionicons name="add-circle-outline" size={20} color="#e6005c" />
               <Text className="text-sm text-[#e6005c] font-semibold ml-2">
                 Add New Address
               </Text>
@@ -1406,11 +1382,7 @@ const CartScreen = () => {
               onPress={openAddAddressModal}
               disabled={isProcessing}
             >
-              <Ionicons
-                name="add-circle-outline"
-                size={20}
-                color="#e6005c"
-              />
+              <Ionicons name="add-circle-outline" size={20} color="#e6005c" />
               <Text className="text-sm text-[#e6005c] font-semibold ml-2">
                 Add Your First Address
               </Text>
@@ -1427,12 +1399,12 @@ const CartScreen = () => {
           >
             <Text className="text-white text-base font-semibold">
               {isProcessing
-                ? 'Processing...'
+                ? "Processing..."
                 : cartItems.length === 0
-                ? 'Cart is Empty'
-                : selectedAddress
-                ? `Pay ₹${finalPayable.toFixed(2)}`
-                : 'Add Address to proceed'}
+                  ? "Cart is Empty"
+                  : selectedAddress
+                    ? `Pay ₹${finalPayable.toFixed(2)}`
+                    : "Add Address to proceed"}
             </Text>
           </TouchableOpacity>
         </View>
@@ -1442,7 +1414,7 @@ const CartScreen = () => {
         <View className="absolute top-0 left-0 right-0 bottom-0 bg-white/80 justify-center items-center z-50">
           <ActivityIndicator size="small" color="#e6005c" />
           <Text className="ml-2 text-sm text-gray-600">
-            {isProcessing ? 'Processing...' : 'Loading...'}
+            {isProcessing ? "Processing..." : "Loading..."}
           </Text>
         </View>
       )}
@@ -1460,7 +1432,7 @@ const CartScreen = () => {
           <View className="bg-white rounded-t-2xl p-4 max-h-[80%]">
             <View className="flex-row justify-between items-center mb-3">
               <Text className="text-lg font-bold text-black">
-                {editingAddressId ? 'Edit Address' : 'Add Address'}
+                {editingAddressId ? "Edit Address" : "Add Address"}
               </Text>
               <TouchableOpacity
                 onPress={() => !isProcessing && setShowAddressModal(false)}
@@ -1472,21 +1444,21 @@ const CartScreen = () => {
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text className="text-xs text-gray-600 mb-1">Address Type</Text>
               <View className="flex-row mb-3">
-                {['Home', 'Work', 'Other'].map(type => (
+                {["Home", "Work", "Other"].map((type) => (
                   <TouchableOpacity
                     key={type}
                     className={`px-3 py-1.5 mr-2 rounded-full border ${
                       addressType === type
-                        ? 'border-[#e6005c] bg-[#fff0f4]'
-                        : 'border-gray-300'
+                        ? "border-[#e6005c] bg-[#fff0f4]"
+                        : "border-gray-300"
                     }`}
                     onPress={() => setAddressType(type)}
                   >
                     <Text
                       className={`text-xs ${
                         addressType === type
-                          ? 'text-[#e6005c]'
-                          : 'text-gray-700'
+                          ? "text-[#e6005c]"
+                          : "text-gray-700"
                       }`}
                     >
                       {type}
@@ -1495,7 +1467,9 @@ const CartScreen = () => {
                 ))}
               </View>
 
-              <Text className="text-xs text-gray-600 mb-1">Flat / House no.</Text>
+              <Text className="text-xs text-gray-600 mb-1">
+                Flat / House no.
+              </Text>
               <TextInput
                 value={flatNo}
                 onChangeText={setFlatNo}
@@ -1513,7 +1487,9 @@ const CartScreen = () => {
                 className="border border-gray-300 rounded px-3 py-2 text-sm mb-3"
               />
 
-              <Text className="text-xs text-gray-600 mb-1">Landmark (optional)</Text>
+              <Text className="text-xs text-gray-600 mb-1">
+                Landmark (optional)
+              </Text>
               <TextInput
                 value={landmark}
                 onChangeText={setLandmark}
@@ -1574,7 +1550,7 @@ const CartScreen = () => {
               disabled={isProcessing}
             >
               <Text className="text-white text-base font-semibold">
-                {editingAddressId ? 'Update Address' : 'Save Address'}
+                {editingAddressId ? "Update Address" : "Save Address"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -1604,21 +1580,21 @@ const CartScreen = () => {
             <View className="p-4">
               <TouchableOpacity
                 className={`p-4 border rounded mb-3 ${
-                  selectedPaymentMethod === 'cod'
-                    ? 'border-[#e6005c] bg-[#fff0f4]'
-                    : 'border-gray-200 bg-white'
+                  selectedPaymentMethod === "cod"
+                    ? "border-[#e6005c] bg-[#fff0f4]"
+                    : "border-gray-200 bg-white"
                 }`}
-                onPress={() => setSelectedPaymentMethod('cod')}
+                onPress={() => setSelectedPaymentMethod("cod")}
               >
                 <View className="flex-row items-center">
                   <View
                     className={`w-6 h-6 rounded-full border-2 mr-3 items-center justify-center ${
-                      selectedPaymentMethod === 'cod'
-                        ? 'border-[#e6005c] bg-[#e6005c]'
-                        : 'border-gray-300'
+                      selectedPaymentMethod === "cod"
+                        ? "border-[#e6005c] bg-[#e6005c]"
+                        : "border-gray-300"
                     }`}
                   >
-                    {selectedPaymentMethod === 'cod' && (
+                    {selectedPaymentMethod === "cod" && (
                       <View className="w-2 h-2 bg-white rounded-full" />
                     )}
                   </View>
@@ -1635,21 +1611,21 @@ const CartScreen = () => {
 
               <TouchableOpacity
                 className={`p-4 border rounded mb-3 ${
-                  selectedPaymentMethod === 'card'
-                    ? 'border-[#e6005c] bg-[#fff0f4]'
-                    : 'border-gray-200 bg-white'
+                  selectedPaymentMethod === "card"
+                    ? "border-[#e6005c] bg-[#fff0f4]"
+                    : "border-gray-200 bg-white"
                 }`}
-                onPress={() => setSelectedPaymentMethod('card')}
+                onPress={() => setSelectedPaymentMethod("card")}
               >
                 <View className="flex-row items-center">
                   <View
                     className={`w-6 h-6 rounded-full border-2 mr-3 items-center justify-center ${
-                      selectedPaymentMethod === 'card'
-                        ? 'border-[#e6005c] bg-[#e6005c]'
-                        : 'border-gray-300'
+                      selectedPaymentMethod === "card"
+                        ? "border-[#e6005c] bg-[#e6005c]"
+                        : "border-gray-300"
                     }`}
                   >
-                    {selectedPaymentMethod === 'card' && (
+                    {selectedPaymentMethod === "card" && (
                       <View className="w-2 h-2 bg-white rounded-full" />
                     )}
                   </View>
@@ -1657,22 +1633,26 @@ const CartScreen = () => {
                     <Text className="text-base font-semibold text-black">
                       Credit/Debit Card
                     </Text>
-                    <Text className="text-sm text-gray-600">Secure payment</Text>
+                    <Text className="text-sm text-gray-600">
+                      Secure payment
+                    </Text>
                   </View>
                 </View>
               </TouchableOpacity>
 
-              {selectedPaymentMethod === 'card' && (
+              {selectedPaymentMethod === "card" && (
                 <View className="bg-gray-50 p-4 rounded mt-4 mb-4">
                   <Text className="text-sm font-semibold text-gray-800 mb-3">
                     Card Details
                   </Text>
 
-                  <Text className="text-xs text-gray-600 mb-1">Card Number</Text>
+                  <Text className="text-xs text-gray-600 mb-1">
+                    Card Number
+                  </Text>
                   <TextInput
                     placeholder="1234 5678 9012 3456"
                     value={cardNumber}
-                    onChangeText={v => setCardNumber(formatCardNumber(v))}
+                    onChangeText={(v) => setCardNumber(formatCardNumber(v))}
                     keyboardType="numeric"
                     maxLength={19}
                     className="border border-gray-300 rounded px-3 py-2 text-sm mb-3"
@@ -1696,7 +1676,7 @@ const CartScreen = () => {
                       <TextInput
                         placeholder="12/25"
                         value={expiryDate}
-                        onChangeText={v => setExpiryDate(formatExpiryDate(v))}
+                        onChangeText={(v) => setExpiryDate(formatExpiryDate(v))}
                         keyboardType="numeric"
                         maxLength={5}
                         className="border border-gray-300 rounded px-3 py-2 text-sm"
@@ -1727,7 +1707,7 @@ const CartScreen = () => {
               disabled={isProcessing}
             >
               <Text className="text-white text-base font-semibold">
-                {isProcessing ? 'Processing...' : 'Continue'}
+                {isProcessing ? "Processing..." : "Continue"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -1743,7 +1723,9 @@ const CartScreen = () => {
       >
         <View className="flex-1 bg-white">
           <View className="flex-row items-center justify-between px-4 pt-4 pb-3 border-b border-gray-200">
-            <Text className="text-lg font-bold text-black">Available Coupons</Text>
+            <Text className="text-lg font-bold text-black">
+              Available Coupons
+            </Text>
             <TouchableOpacity onPress={() => setShowCouponsModal(false)}>
               <Ionicons name="close" size={24} color="#000" />
             </TouchableOpacity>
@@ -1752,7 +1734,9 @@ const CartScreen = () => {
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             <View className="p-4">
               <View className="mb-4">
-                <Text className="text-sm font-semibold text-gray-800 mb-2">Enter Coupon Code</Text>
+                <Text className="text-sm font-semibold text-gray-800 mb-2">
+                  Enter Coupon Code
+                </Text>
                 <TextInput
                   placeholder="Enter coupon code"
                   value={couponCode}
@@ -1768,18 +1752,23 @@ const CartScreen = () => {
                   <Text className="text-white font-semibold">Apply Code</Text>
                 </TouchableOpacity>
                 {couponError && (
-                  <Text className="text-red-500 text-xs mt-1">{couponError}</Text>
+                  <Text className="text-red-500 text-xs mt-1">
+                    {couponError}
+                  </Text>
                 )}
               </View>
 
-              <Text className="text-sm font-semibold text-gray-800 mb-3">Available Coupons</Text>
+              <Text className="text-sm font-semibold text-gray-800 mb-3">
+                Available Coupons
+              </Text>
               {couponsLoading ? (
                 <ActivityIndicator size="small" color="#e6005c" />
               ) : availableCoupons.length > 0 ? (
                 availableCoupons.map((coupon: any) => {
                   const displayTitle = getCouponDisplayTitle(coupon);
-                  const description = coupon.description || getCouponDescription(coupon);
-                  
+                  const description =
+                    coupon.description || getCouponDescription(coupon);
+
                   return (
                     <TouchableOpacity
                       key={coupon.id || coupon.code}
@@ -1789,8 +1778,12 @@ const CartScreen = () => {
                     >
                       <View className="flex-row justify-between items-center">
                         <View className="flex-1">
-                          <Text className="font-bold text-gray-800">{coupon.code}</Text>
-                          <Text className="text-xs text-gray-600 mt-1">{description}</Text>
+                          <Text className="font-bold text-gray-800">
+                            {coupon.code}
+                          </Text>
+                          <Text className="text-xs text-gray-600 mt-1">
+                            {description}
+                          </Text>
                           {coupon.minOrder > 0 && (
                             <Text className="text-xs text-orange-600 mt-1">
                               Min order: ₹{coupon.minOrder}
@@ -1801,23 +1794,28 @@ const CartScreen = () => {
                           <Text className="text-sm font-semibold text-green-600">
                             {displayTitle}
                           </Text>
-                          {coupon.type === 'percent' && coupon.maxDiscount > 0 && (
-                            <Text className="text-xs text-gray-500">Max ₹{coupon.maxDiscount}</Text>
-                          )}
+                          {coupon.type === "percent" &&
+                            coupon.maxDiscount > 0 && (
+                              <Text className="text-xs text-gray-500">
+                                Max ₹{coupon.maxDiscount}
+                              </Text>
+                            )}
                         </View>
                       </View>
                     </TouchableOpacity>
                   );
                 })
               ) : (
-                <Text className="text-gray-500 text-center py-4">No coupons available</Text>
+                <Text className="text-gray-500 text-center py-4">
+                  No coupons available
+                </Text>
               )}
             </View>
           </ScrollView>
         </View>
       </Modal>
 
-       <Modal
+      <Modal
         visible={showSuccessModal}
         transparent
         animationType="fade"
@@ -1825,7 +1823,6 @@ const CartScreen = () => {
       >
         <View className="flex-1 bg-black/50 items-center justify-center px-6">
           <View className="bg-white w-full rounded-2xl p-6 items-center">
-
             <Ionicons
               name="checkmark-circle"
               size={72}
@@ -1846,7 +1843,7 @@ const CartScreen = () => {
               className="bg-[#e6005c] px-8 py-3 rounded-full"
               onPress={() => {
                 setShowSuccessModal(false);
-                router.push('/(customer)/profile');
+                router.push("/(customer)/profile");
               }}
             >
               <Text className="text-white font-bold text-base">

@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
+import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -13,21 +13,21 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { adressApi } from '../(utils)/axiosInstance';
+} from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { adressApi } from "../(utils)/axiosInstance";
 
-const STORAGE_PROFILE = '@AS_profile';
-const STORAGE_ADDRESS = '@saved_user_address';
-const AUTH_TOKEN_KEY = '@auth_token';
-const ORDER_HISTORY_KEY = '@order_history';
+const STORAGE_PROFILE = "@AS_profile";
+const STORAGE_ADDRESS = "@saved_user_address";
+const AUTH_TOKEN_KEY = "@auth_token";
+const ORDER_HISTORY_KEY = "@order_history";
 
 export default function AccountSidebar() {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const [addressesModalVisible, setAddressesModalVisible] = useState(false);
   const [ordersModalVisible, setOrdersModalVisible] = useState(false);
-  const [editName, setEditName] = useState('Guest User');
-  const [editPhone, setEditPhone] = useState('');
+  const [editName, setEditName] = useState("Guest User");
+  const [editPhone, setEditPhone] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
   const [orderHistory, setOrderHistory] = useState<any[]>([]);
@@ -38,19 +38,22 @@ export default function AccountSidebar() {
   // Edit Address Modal
   const [editAddressModalVisible, setEditAddressModalVisible] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any | null>(null);
-  const [addressType, setAddressType] = useState<'Home' | 'Work' | 'Gym' | 'Others'>('Home');
-  const [flatNo, setFlatNo] = useState('');
-  const [buildingName, setBuildingName] = useState('');
-  const [landmark, setLandmark] = useState('');
-  const [receiverName, setReceiverName] = useState('');
-  const [receiverNumber, setReceiverNumber] = useState('');
-  const [city, setCity] = useState('');
-  const [stateName, setStateName] = useState('');
-  const [pincode, setPincode] = useState('');
+  const [addressType, setAddressType] = useState<
+    "Home" | "Work" | "Gym" | "Others"
+  >("Home");
+  const [flatNo, setFlatNo] = useState("");
+  const [buildingName, setBuildingName] = useState("");
+  const [landmark, setLandmark] = useState("");
+  const [receiverName, setReceiverName] = useState("");
+  const [receiverNumber, setReceiverNumber] = useState("");
+  const [city, setCity] = useState("");
+  const [stateName, setStateName] = useState("");
+  const [pincode, setPincode] = useState("");
 
   // Selected Order for Details
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
-  const [orderDetailsModalVisible, setOrderDetailsModalVisible] = useState(false);
+  const [orderDetailsModalVisible, setOrderDetailsModalVisible] =
+    useState(false);
 
   useEffect(() => {
     (async () => {
@@ -58,13 +61,13 @@ export default function AccountSidebar() {
         const raw = await AsyncStorage.getItem(STORAGE_PROFILE);
         if (raw) {
           const parsed = JSON.parse(raw);
-          setEditName(parsed.name ?? 'Guest User');
-          setEditPhone(parsed.phone ?? '');
+          setEditName(parsed.name ?? "Guest User");
+          setEditPhone(parsed.phone ?? "");
         }
         await loadAddressesFromStorage();
         await loadOrderHistory();
       } catch (err) {
-        console.warn('Failed to load data from storage:', err);
+        console.warn("Failed to load data from storage:", err);
       } finally {
         setLoaded(true);
       }
@@ -83,7 +86,7 @@ export default function AccountSidebar() {
         }
       }
     } catch (err) {
-      console.warn('failed to load addresses:', err);
+      console.warn("failed to load addresses:", err);
       setSavedAddresses([]);
     }
   };
@@ -96,7 +99,7 @@ export default function AccountSidebar() {
         setOrderHistory(Array.isArray(orders) ? orders : []);
       }
     } catch (err) {
-      console.warn('failed to load order history:', err);
+      console.warn("failed to load order history:", err);
       setOrderHistory([]);
     }
   };
@@ -107,13 +110,13 @@ export default function AccountSidebar() {
       if (token) {
         return {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         };
       }
-      return { 'Content-Type': 'application/json' };
+      return { "Content-Type": "application/json" };
     } catch (e) {
-      console.error('Error getting auth header:', e);
-      return { 'Content-Type': 'application/json' };
+      console.error("Error getting auth header:", e);
+      return { "Content-Type": "application/json" };
     }
   };
 
@@ -122,7 +125,7 @@ export default function AccountSidebar() {
       setLoadingAddresses(true);
       const headers = await getAuthHeader();
 
-      const res = await adressApi.get('/address/all', { headers });
+      const res = await adressApi.get("/address/all", { headers });
       const data = res.data;
 
       if (Array.isArray(data)) {
@@ -134,7 +137,7 @@ export default function AccountSidebar() {
         await loadAddressesFromStorage();
       }
     } catch (error) {
-      console.warn('API fetch error:', error);
+      console.warn("API fetch error:", error);
       await loadAddressesFromStorage();
     } finally {
       setLoadingAddresses(false);
@@ -144,21 +147,22 @@ export default function AccountSidebar() {
   const deleteAddressFromApi = async (id: string) => {
     try {
       setIsProcessing(true);
-      console.log('Deleting address ID:', id);
-      
+      console.log("Deleting address ID:", id);
+
       const response = await adressApi.delete(`/address/delete/${id}`);
 
-      console.log('Delete response:', JSON.stringify(response, null, 2));
-      
+      console.log("Delete response:", JSON.stringify(response, null, 2));
+
       if (response.status === 200 || response.status === 204) {
         return true;
       } else {
         throw new Error(`Delete failed with status: ${response.status}`);
       }
-
     } catch (e: any) {
-      console.error('Delete API error:', e.response?.data || e.message || e);
-      throw new Error(e.response?.data?.message || e.message || 'Failed to delete address');
+      console.error("Delete API error:", e.response?.data || e.message || e);
+      throw new Error(
+        e.response?.data?.message || e.message || "Failed to delete address"
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -179,7 +183,7 @@ export default function AccountSidebar() {
       }
       return res.data;
     } catch (e: any) {
-      console.error('updateAddressToApi error:', e.message || e);
+      console.error("updateAddressToApi error:", e.message || e);
       throw e;
     } finally {
       setIsProcessing(false);
@@ -188,57 +192,72 @@ export default function AccountSidebar() {
 
   const handleDeleteAddress = (address: any) => {
     if (!address?.id) {
-      Alert.alert('Error', 'Invalid address');
+      Alert.alert("Error", "Invalid address");
       return;
     }
 
-    Alert.alert('Delete Address', 'Are you sure you want to delete this address?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteAddressFromApi(address.id);
-            const updatedList = savedAddresses.filter((item: any) => item.id !== address.id);
-            setSavedAddresses(updatedList);
-            if (updatedList.length > 0) {
-              await AsyncStorage.setItem(STORAGE_ADDRESS, JSON.stringify(updatedList[0]));
-            } else {
-              await AsyncStorage.removeItem(STORAGE_ADDRESS);
+    Alert.alert(
+      "Delete Address",
+      "Are you sure you want to delete this address?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteAddressFromApi(address.id);
+              const updatedList = savedAddresses.filter(
+                (item: any) => item.id !== address.id
+              );
+              setSavedAddresses(updatedList);
+              if (updatedList.length > 0) {
+                await AsyncStorage.setItem(
+                  STORAGE_ADDRESS,
+                  JSON.stringify(updatedList[0])
+                );
+              } else {
+                await AsyncStorage.removeItem(STORAGE_ADDRESS);
+              }
+              Alert.alert("Success", "Address deleted successfully");
+            } catch (error: any) {
+              Alert.alert("Error", error.message || "Failed to delete address");
             }
-            Alert.alert('Success', 'Address deleted successfully');
-          } catch (error: any) {
-            Alert.alert('Error', error.message || 'Failed to delete address');
-          }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const openEditAddressModal = (address: any) => {
     if (!address) return;
     setEditingAddress(address);
-    setAddressType(address.title || 'Home');
-    setFlatNo(address.house || '');
-    setBuildingName(address.street || '');
-    setLandmark(address.landmark || '');
-    setReceiverName(address.name || '');
-    setReceiverNumber(address.phone || '');
-    setCity(address.city || '');
-    setStateName(address.state || '');
-    setPincode(address.pincode || '');
+    setAddressType(address.title || "Home");
+    setFlatNo(address.house || "");
+    setBuildingName(address.street || "");
+    setLandmark(address.landmark || "");
+    setReceiverName(address.name || "");
+    setReceiverNumber(address.phone || "");
+    setCity(address.city || "");
+    setStateName(address.state || "");
+    setPincode(address.pincode || "");
     setEditAddressModalVisible(true);
   };
 
   const handleSaveAddress = async () => {
-    if (!flatNo.trim() || !buildingName.trim() || !city.trim() || !stateName.trim() || !pincode.trim()) {
-      Alert.alert('Validation Error', 'Please fill all required fields(*)');
+    if (
+      !flatNo.trim() ||
+      !buildingName.trim() ||
+      !city.trim() ||
+      !stateName.trim() ||
+      !pincode.trim()
+    ) {
+      Alert.alert("Validation Error", "Please fill all required fields(*)");
       return;
     }
 
     if (!editingAddress) {
-      Alert.alert('Error', 'No address selected');
+      Alert.alert("Error", "No address selected");
       return;
     }
 
@@ -267,30 +286,33 @@ export default function AccountSidebar() {
       if (savedAddr) {
         const primaryAddr = JSON.parse(savedAddr);
         if (primaryAddr.id === updatedAddress.id) {
-          await AsyncStorage.setItem(STORAGE_ADDRESS, JSON.stringify(updatedAddress));
+          await AsyncStorage.setItem(
+            STORAGE_ADDRESS,
+            JSON.stringify(updatedAddress)
+          );
         }
       }
 
       setEditAddressModalVisible(false);
       resetEditAddressForm();
-      Alert.alert('Success', 'Address updated successfully');
+      Alert.alert("Success", "Address updated successfully");
     } catch (e: any) {
-      console.error('Failed to update address:', e);
-      Alert.alert('Error', `Failed to update address: ${e.message}`);
+      console.error("Failed to update address:", e);
+      Alert.alert("Error", `Failed to update address: ${e.message}`);
     }
   };
 
   const resetEditAddressForm = () => {
     setEditingAddress(null);
-    setAddressType('Home');
-    setFlatNo('');
-    setBuildingName('');
-    setLandmark('');
-    setReceiverName('');
-    setReceiverNumber('');
-    setCity('');
-    setStateName('');
-    setPincode('');
+    setAddressType("Home");
+    setFlatNo("");
+    setBuildingName("");
+    setLandmark("");
+    setReceiverName("");
+    setReceiverNumber("");
+    setCity("");
+    setStateName("");
+    setPincode("");
   };
 
   const openOrdersModal = async () => {
@@ -299,8 +321,8 @@ export default function AccountSidebar() {
     try {
       await loadOrderHistory();
     } catch (error) {
-      console.error('Error loading orders:', error);
-      Alert.alert('Error', 'Failed to load order history');
+      console.error("Error loading orders:", error);
+      Alert.alert("Error", "Failed to load order history");
     } finally {
       setLoadingOrders(false);
     }
@@ -313,38 +335,38 @@ export default function AccountSidebar() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     });
   };
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
+    return date.toLocaleTimeString("en-IN", {
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'confirmed':
-        return '#10b981'; // green
-      case 'shipped':
-        return '#3b82f6'; // blue
-      case 'delivered':
-        return '#8b5cf6'; // purple
-      case 'cancelled':
-        return '#ef4444'; // red
+      case "confirmed":
+        return "#10b981"; // green
+      case "shipped":
+        return "#3b82f6"; // blue
+      case "delivered":
+        return "#8b5cf6"; // purple
+      case "cancelled":
+        return "#ef4444"; // red
       default:
-        return '#6b7280'; // gray
+        return "#6b7280"; // gray
     }
   };
 
-  const displayName = editName || 'Guest User';
-  const displayPhone = editPhone || '';
+  const displayName = editName || "Guest User";
+  const displayPhone = editPhone || "";
 
   const openProfileModal = () => setProfileModalVisible(true);
 
@@ -354,15 +376,15 @@ export default function AccountSidebar() {
     try {
       await fetchAddressesFromAPI();
     } catch (error) {
-      console.error('Error loading addresses:', error);
+      console.error("Error loading addresses:", error);
     } finally {
       setLoadingAddresses(false);
     }
   };
 
   const handleSaveProfile = async () => {
-    const trimmedName = (editName || '').trim() || 'Guest User';
-    const trimmedPhone = (editPhone || '').trim() || '';
+    const trimmedName = (editName || "").trim() || "Guest User";
+    const trimmedPhone = (editPhone || "").trim() || "";
 
     const payload = { name: trimmedName, phone: trimmedPhone };
 
@@ -371,23 +393,24 @@ export default function AccountSidebar() {
       setEditName(trimmedName);
       setEditPhone(trimmedPhone);
       setProfileModalVisible(false);
-      Alert.alert('Saved', 'Profile updated successfully.');
+      Alert.alert("Saved", "Profile updated successfully.");
     } catch (err) {
-      console.warn('Failed to save profile to storage:', err);
-      Alert.alert('Error', 'Could not save profile. Try again.');
+      console.warn("Failed to save profile to storage:", err);
+      Alert.alert("Error", "Could not save profile. Try again.");
     }
   };
 
   const formatAddress = (address: any) => {
-    if (!address) return { fullAddress: 'No address available', cityStatePincode: '' };
+    if (!address)
+      return { fullAddress: "No address available", cityStatePincode: "" };
 
     const parts: string[] = [];
     if (address.house) parts.push(address.house);
     if (address.street) parts.push(address.street);
 
-    const fullAddress = parts.join(', ');
-    const cityStatePincode = `${address.city || ''}, ${address.state || ''} - ${
-      address.pincode || ''
+    const fullAddress = parts.join(", ");
+    const cityStatePincode = `${address.city || ""}, ${address.state || ""} - ${
+      address.pincode || ""
     }`;
 
     return { fullAddress, cityStatePincode };
@@ -395,20 +418,20 @@ export default function AccountSidebar() {
 
   const clearOrderHistory = async () => {
     Alert.alert(
-      'Clear History',
-      'Are you sure you want to clear all order history?',
+      "Clear History",
+      "Are you sure you want to clear all order history?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Clear',
-          style: 'destructive',
+          text: "Clear",
+          style: "destructive",
           onPress: async () => {
             try {
               await AsyncStorage.removeItem(ORDER_HISTORY_KEY);
               setOrderHistory([]);
-              Alert.alert('Success', 'Order history cleared');
+              Alert.alert("Success", "Order history cleared");
             } catch (error) {
-              Alert.alert('Error', 'Failed to clear order history');
+              Alert.alert("Error", "Failed to clear order history");
             }
           },
         },
@@ -428,9 +451,12 @@ export default function AccountSidebar() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <SafeAreaView
+        className="flex-1 bg-white"
+        edges={["top", "left", "right"]}
+      >
         <ScrollView
-          contentContainerStyle={{ alignItems: 'center' }}
+          contentContainerStyle={{ alignItems: "center" }}
           className="pt-8 pb-10 px-6 bg-white"
         >
           <View className="mb-4">
@@ -440,16 +466,20 @@ export default function AccountSidebar() {
               </View>
             </View>
           </View>
-          <Text className="text-lg font-bold text-neutral-800 mb-1">{displayName}</Text>
+          <Text className="text-lg font-bold text-neutral-800 mb-1">
+            {displayName}
+          </Text>
           {displayPhone ? (
-            <Text className="text-sm text-neutral-500 mb-2">{displayPhone}</Text>
+            <Text className="text-sm text-neutral-500 mb-2">
+              {displayPhone}
+            </Text>
           ) : null}
 
           <View className="w-full mt-2">
-            <ProfileRow 
-              icon="bag-outline" 
-              label="Order History" 
-              onPress={openOrdersModal} 
+            <ProfileRow
+              icon="bag-outline"
+              label="Order History"
+              onPress={openOrdersModal}
             />
             <ProfileRow
               icon="location-outline"
@@ -537,7 +567,11 @@ export default function AccountSidebar() {
                       className="mr-3 p-1"
                       disabled={isProcessing}
                     >
-                      <Ionicons name="trash-outline" size={20} color="#ef4444" />
+                      <Ionicons
+                        name="trash-outline"
+                        size={20}
+                        color="#ef4444"
+                      />
                     </TouchableOpacity>
                   )}
                   <TouchableOpacity
@@ -559,7 +593,7 @@ export default function AccountSidebar() {
               ) : orderHistory.length > 0 ? (
                 <FlatList
                   data={orderHistory}
-                  keyExtractor={(item: any, index) => 
+                  keyExtractor={(item: any, index) =>
                     item.orderId ? item.orderId.toString() : index.toString()
                   }
                   showsVerticalScrollIndicator={false}
@@ -574,30 +608,47 @@ export default function AccountSidebar() {
                         <Text className="font-bold text-neutral-800">
                           Order #{item.orderId}
                         </Text>
-                        <View className="px-2 py-1 rounded" style={{ backgroundColor: getStatusColor(item.status) + '20' }}>
-                          <Text className="text-xs font-semibold" style={{ color: getStatusColor(item.status) }}>
+                        <View
+                          className="px-2 py-1 rounded"
+                          style={{
+                            backgroundColor: getStatusColor(item.status) + "20",
+                          }}
+                        >
+                          <Text
+                            className="text-xs font-semibold"
+                            style={{ color: getStatusColor(item.status) }}
+                          >
                             {item.status}
                           </Text>
                         </View>
                       </View>
-                      
+
                       <Text className="text-sm text-neutral-600 mb-1">
-                        {formatDate(item.orderDate)} • {formatTime(item.orderDate)}
+                        {formatDate(item.orderDate)} •{" "}
+                        {formatTime(item.orderDate)}
                       </Text>
-                      
+
                       <View className="flex-row justify-between items-center mt-2">
                         <Text className="text-sm text-neutral-500">
-                          {item.items.length} item{item.items.length > 1 ? 's' : ''}
+                          {item.items.length} item
+                          {item.items.length > 1 ? "s" : ""}
                         </Text>
                         <Text className="font-bold text-neutral-900">
                           ₹{item.totalAmount}
                         </Text>
                       </View>
-                      
+
                       <View className="flex-row items-center mt-3 pt-3 border-t border-gray-100">
-                        <Ionicons name="location-outline" size={14} color="#666" />
-                        <Text className="text-xs text-neutral-500 ml-1 flex-1" numberOfLines={1}>
-                          {item.address?.city || 'Location not specified'}
+                        <Ionicons
+                          name="location-outline"
+                          size={14}
+                          color="#666"
+                        />
+                        <Text
+                          className="text-xs text-neutral-500 ml-1 flex-1"
+                          numberOfLines={1}
+                        >
+                          {item.address?.city || "Location not specified"}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -627,7 +678,7 @@ export default function AccountSidebar() {
                     className="mt-4 px-6 py-3 bg-pink-500 rounded-full"
                     onPress={() => {
                       setOrdersModalVisible(false);
-                      router.push('/(customer)/home');
+                      router.push("/(customer)/home");
                     }}
                   >
                     <Text className="text-white font-bold">Start Shopping</Text>
@@ -675,32 +726,54 @@ export default function AccountSidebar() {
                       <Text className="font-bold text-lg text-neutral-900">
                         Order #{selectedOrder.orderId}
                       </Text>
-                      <View className="px-3 py-1 rounded-full" style={{ backgroundColor: getStatusColor(selectedOrder.status) + '20' }}>
-                        <Text className="text-sm font-semibold" style={{ color: getStatusColor(selectedOrder.status) }}>
+                      <View
+                        className="px-3 py-1 rounded-full"
+                        style={{
+                          backgroundColor:
+                            getStatusColor(selectedOrder.status) + "20",
+                        }}
+                      >
+                        <Text
+                          className="text-sm font-semibold"
+                          style={{
+                            color: getStatusColor(selectedOrder.status),
+                          }}
+                        >
                           {selectedOrder.status}
                         </Text>
                       </View>
                     </View>
-                    
+
                     <Text className="text-neutral-600 mb-1">
-                      Ordered on {formatDate(selectedOrder.orderDate)} at {formatTime(selectedOrder.orderDate)}
+                      Ordered on {formatDate(selectedOrder.orderDate)} at{" "}
+                      {formatTime(selectedOrder.orderDate)}
                     </Text>
-                    
+
                     <View className="mt-3 pt-3 border-t border-gray-200">
                       <View className="flex-row justify-between">
-                        <Text className="font-semibold text-neutral-700">Total Amount:</Text>
-                        <Text className="font-bold text-lg text-neutral-900">₹{selectedOrder.totalAmount}</Text>
+                        <Text className="font-semibold text-neutral-700">
+                          Total Amount:
+                        </Text>
+                        <Text className="font-bold text-lg text-neutral-900">
+                          ₹{selectedOrder.totalAmount}
+                        </Text>
                       </View>
-                      
+
                       {selectedOrder.couponDiscount > 0 && (
                         <View className="flex-row justify-between mt-1">
-                          <Text className="text-neutral-600">Coupon Discount:</Text>
-                          <Text className="text-green-600 font-semibold">- ₹{selectedOrder.couponDiscount}</Text>
+                          <Text className="text-neutral-600">
+                            Coupon Discount:
+                          </Text>
+                          <Text className="text-green-600 font-semibold">
+                            - ₹{selectedOrder.couponDiscount}
+                          </Text>
                         </View>
                       )}
-                      
+
                       <View className="flex-row justify-between mt-1">
-                        <Text className="text-neutral-600">Payment Method:</Text>
+                        <Text className="text-neutral-600">
+                          Payment Method:
+                        </Text>
                         <Text className="font-semibold text-neutral-700 capitalize">
                           {selectedOrder.paymentMethod}
                         </Text>
@@ -709,15 +782,23 @@ export default function AccountSidebar() {
                   </View>
 
                   {/* Items List */}
-                  <Text className="font-bold text-neutral-900 mb-3">Items Ordered</Text>
+                  <Text className="font-bold text-neutral-900 mb-3">
+                    Items Ordered
+                  </Text>
                   {selectedOrder.items.map((item: any, index: number) => (
-                    <View key={index} className="flex-row items-center mb-3 p-3 border border-gray-100 rounded-lg">
+                    <View
+                      key={index}
+                      className="flex-row items-center mb-3 p-3 border border-gray-100 rounded-lg"
+                    >
                       <Image
                         source={{ uri: item.image }}
                         className="w-16 h-16 rounded-lg bg-gray-100 mr-3"
                       />
                       <View className="flex-1">
-                        <Text className="font-semibold text-neutral-800 mb-1" numberOfLines={1}>
+                        <Text
+                          className="font-semibold text-neutral-800 mb-1"
+                          numberOfLines={1}
+                        >
                           {item.name}
                         </Text>
                         <Text className="text-sm text-neutral-600 mb-1">
@@ -731,7 +812,9 @@ export default function AccountSidebar() {
                   ))}
 
                   {/* Delivery Address */}
-                  <Text className="font-bold text-neutral-900 mb-3 mt-6">Delivery Address</Text>
+                  <Text className="font-bold text-neutral-900 mb-3 mt-6">
+                    Delivery Address
+                  </Text>
                   <View className="p-4 bg-gray-50 rounded-lg mb-3">
                     {selectedOrder.address ? (
                       <>
@@ -739,7 +822,8 @@ export default function AccountSidebar() {
                           {selectedOrder.address.title} Address
                         </Text>
                         <Text className="text-neutral-600 mb-1">
-                          {selectedOrder.address.house}, {selectedOrder.address.street}
+                          {selectedOrder.address.house},{" "}
+                          {selectedOrder.address.street}
                         </Text>
                         {selectedOrder.address.landmark && (
                           <Text className="text-neutral-600 mb-1">
@@ -747,7 +831,9 @@ export default function AccountSidebar() {
                           </Text>
                         )}
                         <Text className="text-neutral-600 mb-1">
-                          {selectedOrder.address.city}, {selectedOrder.address.state} - {selectedOrder.address.pincode}
+                          {selectedOrder.address.city},{" "}
+                          {selectedOrder.address.state} -{" "}
+                          {selectedOrder.address.pincode}
                         </Text>
                         {selectedOrder.address.name && (
                           <Text className="text-neutral-600 mb-1">
@@ -761,24 +847,40 @@ export default function AccountSidebar() {
                         )}
                       </>
                     ) : (
-                      <Text className="text-neutral-500">Address not available</Text>
+                      <Text className="text-neutral-500">
+                        Address not available
+                      </Text>
                     )}
                   </View>
 
                   {/* Delivery Instructions */}
-                  {selectedOrder.deliveryInstructions && selectedOrder.deliveryInstructions.length > 0 && (
-                    <>
-                      <Text className="font-bold text-neutral-900 mb-3">Delivery Instructions</Text>
-                      <View className="p-4 bg-gray-50 rounded-lg mb-3">
-                        {selectedOrder.deliveryInstructions.map((instruction: string, index: number) => (
-                          <View key={index} className="flex-row items-center mb-2">
-                            <Ionicons name="checkmark-circle" size={16} color="#10b981" />
-                            <Text className="ml-2 text-neutral-600">{instruction}</Text>
-                          </View>
-                        ))}
-                      </View>
-                    </>
-                  )}
+                  {selectedOrder.deliveryInstructions &&
+                    selectedOrder.deliveryInstructions.length > 0 && (
+                      <>
+                        <Text className="font-bold text-neutral-900 mb-3">
+                          Delivery Instructions
+                        </Text>
+                        <View className="p-4 bg-gray-50 rounded-lg mb-3">
+                          {selectedOrder.deliveryInstructions.map(
+                            (instruction: string, index: number) => (
+                              <View
+                                key={index}
+                                className="flex-row items-center mb-2"
+                              >
+                                <Ionicons
+                                  name="checkmark-circle"
+                                  size={16}
+                                  color="#10b981"
+                                />
+                                <Text className="ml-2 text-neutral-600">
+                                  {instruction}
+                                </Text>
+                              </View>
+                            )
+                          )}
+                        </View>
+                      </>
+                    )}
                 </ScrollView>
               )}
 
@@ -829,24 +931,25 @@ export default function AccountSidebar() {
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={{ paddingVertical: 8 }}
                   renderItem={({ item }: any) => {
-                    const { fullAddress, cityStatePincode } = formatAddress(item);
+                    const { fullAddress, cityStatePincode } =
+                      formatAddress(item);
                     return (
                       <View className="bg-pink-50 border border-pink-100 p-4 mb-3">
                         <View className="flex-row items-center justify-between mb-3">
                           <View className="flex-row items-center bg-pink-100 px-3 py-1">
                             <Ionicons
                               name={
-                                item.title === 'Work'
-                                  ? 'briefcase'
-                                  : item.title === 'Gym'
-                                  ? 'barbell'
-                                  : 'home'
+                                item.title === "Work"
+                                  ? "briefcase"
+                                  : item.title === "Gym"
+                                    ? "barbell"
+                                    : "home"
                               }
                               size={16}
                               color="#e6005c"
                             />
                             <Text className="text-xs font-bold text-pink-700 ml-2">
-                              {item.title || 'Address'}
+                              {item.title || "Address"}
                             </Text>
                           </View>
                         </View>
@@ -859,7 +962,7 @@ export default function AccountSidebar() {
                           <Text className="text-sm text-neutral-800 mb-1">
                             <Text className="font-semibold text-neutral-600">
                               Landmark:
-                            </Text>{' '}
+                            </Text>{" "}
                             {item.landmark}
                           </Text>
                         ) : null}
@@ -872,7 +975,7 @@ export default function AccountSidebar() {
                           <Text className="text-sm text-neutral-800 mb-1">
                             <Text className="font-semibold text-neutral-600">
                               Receiver:
-                            </Text>{' '}
+                            </Text>{" "}
                             {item.name}
                           </Text>
                         ) : null}
@@ -881,7 +984,7 @@ export default function AccountSidebar() {
                           <Text className="text-sm text-neutral-800 mb-1">
                             <Text className="font-semibold text-neutral-600">
                               Phone:
-                            </Text>{' '}
+                            </Text>{" "}
                             {item.phone}
                           </Text>
                         ) : null}
@@ -933,7 +1036,11 @@ export default function AccountSidebar() {
                   }}
                   ListEmptyComponent={
                     <View className="items-center justify-center py-10">
-                      <Ionicons name="location-outline" size={48} color="#ccc" />
+                      <Ionicons
+                        name="location-outline"
+                        size={48}
+                        color="#ccc"
+                      />
                       <Text className="text-base text-neutral-500 mt-4">
                         No saved addresses
                       </Text>
@@ -1004,35 +1111,41 @@ export default function AccountSidebar() {
                     Save Address as
                   </Text>
                   <View className="flex-row flex-wrap">
-                    {['Home', 'Work', 'Gym', 'Others'].map((type, index) => {
+                    {["Home", "Work", "Gym", "Others"].map((type, index) => {
                       const selected = addressType === type;
                       return (
                         <TouchableOpacity
                           key={type}
                           className={`flex-row items-center justify-center px-3 py-2 border mb-2 ${
-                            selected ? 'bg-pink-100 border-pink-600' : 'border-gray-300'
-                          } ${index > 0 ? 'ml-2' : ''}`}
+                            selected
+                              ? "bg-pink-100 border-pink-600"
+                              : "border-gray-300"
+                          } ${index > 0 ? "ml-2" : ""}`}
                           onPress={() =>
-                            setAddressType(type as 'Home' | 'Work' | 'Gym' | 'Others')
+                            setAddressType(
+                              type as "Home" | "Work" | "Gym" | "Others"
+                            )
                           }
                           disabled={isProcessing}
                         >
                           <Ionicons
                             name={
-                              type === 'Home'
-                                ? 'home'
-                                : type === 'Work'
-                                ? 'briefcase'
-                                : type === 'Gym'
-                                ? 'barbell'
-                                : 'location'
+                              type === "Home"
+                                ? "home"
+                                : type === "Work"
+                                  ? "briefcase"
+                                  : type === "Gym"
+                                    ? "barbell"
+                                    : "location"
                             }
                             size={18}
-                            color={selected ? '#e6005c' : '#666'}
+                            color={selected ? "#e6005c" : "#666"}
                           />
                           <Text
                             className={`ml-1 text-sm ${
-                              selected ? 'text-pink-700 font-semibold' : 'text-gray-600'
+                              selected
+                                ? "text-pink-700 font-semibold"
+                                : "text-gray-600"
                             }`}
                           >
                             {type}
@@ -1173,7 +1286,7 @@ function ProfileRow({
   return (
     <TouchableOpacity
       className={`flex-row items-center justify-between py-3 border-b border-pink-100 ${
-        isLast ? 'border-b-0' : ''
+        isLast ? "border-b-0" : ""
       }`}
       onPress={onPress}
       activeOpacity={0.8}
