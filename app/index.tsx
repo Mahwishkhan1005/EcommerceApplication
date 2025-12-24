@@ -152,7 +152,6 @@ export default function Index() {
       if (response.status === 200) {
         await AsyncStorage.setItem("AccessToken", response.data.accessToken);
         const decoded = jwtDecode<DecodedToken>(response.data.accessToken);
-
         if (decoded.role === "ROLE_USER") {
           router.replace("/(customer)/home");
         } else {
