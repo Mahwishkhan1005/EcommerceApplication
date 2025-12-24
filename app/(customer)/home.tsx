@@ -69,7 +69,7 @@ const Home = () => {
     useState<Products | null>(null);
 
   const isWeb = Platform.OS === "web";
-  const API_BASE = "http://192.168.0.200:8081";
+  const API_BASE = "http://192.168.0.225:8081";
 
   const params = useLocalSearchParams();
   const passedProduct = params?.product

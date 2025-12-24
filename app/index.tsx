@@ -142,7 +142,7 @@ export default function Index() {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        "http://192.168.0.200:8083/api/auth/login",
+        "http://192.168.0.225:8083/api/auth/login",
         {
           email: formData.email,
           password: formData.password,

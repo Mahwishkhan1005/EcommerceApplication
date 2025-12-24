@@ -1817,6 +1817,7 @@ const CartScreen = () => {
           </ScrollView>
         </View>
       </Modal>
+
        <Modal
         visible={showSuccessModal}
         transparent
