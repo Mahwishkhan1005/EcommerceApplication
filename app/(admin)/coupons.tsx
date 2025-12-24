@@ -82,7 +82,8 @@ const Coupons = () => {
         router.replace("/");
         return;
       }
-      const errorMsg = error.response?.data?.message || "Check network or server status.";
+      const errorMsg =
+        error.response?.data?.message || "Check network or server status.";
       if (isWeb) alert(`Error: ${errorMsg}`);
       else Alert.alert("Backend Error", errorMsg);
     } finally {
@@ -158,16 +159,23 @@ const Coupons = () => {
         });
       } else {
         // Update endpoint: http://192.168.0.210:8082/api/coupons/update/{code}
-        response = await axios.put(`${API_URL}/update/${activeCouponCode}`, couponData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+        response = await axios.put(
+          `${API_URL}/update/${activeCouponCode}`,
+          couponData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
       }
 
       if (response.status === 200 || response.status === 201) {
-        const successMsg = modalMode === "add" ? "Coupon Added Successfully!" : "Coupon Updated Successfully!";
+        const successMsg =
+          modalMode === "add"
+            ? "Coupon Added Successfully!"
+            : "Coupon Updated Successfully!";
         if (isWeb) alert(successMsg);
         else Alert.alert("Success", successMsg);
 
@@ -196,7 +204,7 @@ const Coupons = () => {
       if (response.status === 200 || response.status === 204) {
         if (isWeb) alert(`Coupon ${code} deleted!`);
         else Alert.alert("Success", `Coupon ${code} deleted!`);
-        
+
         setCoupons((prev) => prev.filter((c) => c.code !== code));
       }
     } catch (error: any) {
@@ -246,7 +254,9 @@ const Coupons = () => {
             dailydrop
           </Text>
           <View className="bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-            <Text className="text-[10px] font-bold text-gray-500 uppercase">Admin</Text>
+            <Text className="text-[10px] font-bold text-gray-500 uppercase">
+              Admin
+            </Text>
           </View>
         </View>
 
@@ -277,15 +287,27 @@ const Coupons = () => {
               style={{ elevation: 10, zIndex: 2000 }}
             >
               <View className="px-4 py-3 bg-gray-50 border-b border-gray-100">
-                <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Administrator</Text>
-                <Text className="text-sm font-bold text-gray-800" numberOfLines={1}>admin@dailydrop.com</Text>
+                <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  Administrator
+                </Text>
+                <Text
+                  className="text-sm font-bold text-gray-800"
+                  numberOfLines={1}
+                >
+                  admin@dailydrop.com
+                </Text>
               </View>
               <TouchableOpacity
-                onPress={() => { setProfileMenuVisible(false); handleLogout(); }}
+                onPress={() => {
+                  setProfileMenuVisible(false);
+                  handleLogout();
+                }}
                 className="flex-row items-center px-4 py-3 active:bg-red-50"
               >
                 <Ionicons name="log-out-outline" size={18} color="#dc2626" />
-                <Text className="ml-3 text-sm font-bold text-red-600">Log Out</Text>
+                <Text className="ml-3 text-sm font-bold text-red-600">
+                  Log Out
+                </Text>
               </TouchableOpacity>
             </View>
           )}
@@ -298,7 +320,12 @@ const Coupons = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={["#8b008b"]} tintColor="#8b008b" />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#8b008b"]}
+            tintColor="#8b008b"
+          />
         }
       >
         <View className="p-4">
@@ -308,12 +335,18 @@ const Coupons = () => {
                 <Ionicons name="ticket-outline" size={20} color="#8b008b" />
               </View>
               <View>
-                <Text className="text-xl font-extrabold text-gray-900 tracking-tight">Coupons Overview</Text>
-                <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Manage discount codes</Text>
+                <Text className="text-xl font-extrabold text-gray-900 tracking-tight">
+                  Coupons Overview
+                </Text>
+                <Text className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                  Manage discount codes
+                </Text>
               </View>
             </View>
             <View className="bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-              <Text className="text-[10px] font-bold text-gray-500">{filteredCoupons.length} Total</Text>
+              <Text className="text-[10px] font-bold text-gray-500">
+                {filteredCoupons.length} Total
+              </Text>
             </View>
           </View>
 
@@ -331,23 +364,46 @@ const Coupons = () => {
                   <View className="p-4 flex-row justify-between items-start bg-purple-50/50">
                     <View className="flex-1 mr-2">
                       <View className="bg-[#8b008b] px-3 py-1 rounded-lg self-start mb-2">
-                        <Text className="text-white font-bold text-sm tracking-widest">{coupon.code}</Text>
+                        <Text className="text-white font-bold text-sm tracking-widest">
+                          {coupon.code}
+                        </Text>
                       </View>
-                      <Text className="text-xs text-gray-500 font-medium" numberOfLines={2}>{coupon.description}</Text>
+                      <Text
+                        className="text-xs text-gray-500 font-medium"
+                        numberOfLines={2}
+                      >
+                        {coupon.description}
+                      </Text>
                     </View>
-                    <View className={`px-2 py-1 rounded-md ${coupon.active ? "bg-green-100" : "bg-red-100"}`}>
-                      <Text className={`text-[10px] font-bold ${coupon.active ? "text-black-700" : "text-black-700"}`}>{coupon.active ? "ACTIVE" : "INACTIVE"}</Text>
+                    <View
+                      className={`px-2 py-1 rounded-md ${coupon.active ? "bg-green-100" : "bg-red-100"}`}
+                    >
+                      <Text
+                        className={`text-[10px] font-bold ${coupon.active ? "text-black-700" : "text-black-700"}`}
+                      >
+                        {coupon.active ? "ACTIVE" : "INACTIVE"}
+                      </Text>
                     </View>
                   </View>
-                  
+
                   <View className="p-4 border-t border-gray-100">
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-gray-400 text-[10px] font-bold uppercase">Discount</Text>
-                      <Text className="text-lg font-black text-gray-900">{coupon.type === "FLAT" ? `₹${coupon.value}` : `${coupon.value}%`}</Text>
+                      <Text className="text-gray-400 text-[10px] font-bold uppercase">
+                        Discount
+                      </Text>
+                      <Text className="text-lg font-black text-gray-900">
+                        {coupon.type === "FLAT"
+                          ? `₹${coupon.value}`
+                          : `${coupon.value}%`}
+                      </Text>
                     </View>
                     <View className="flex-row justify-between items-center">
-                      <Text className="text-gray-400 text-[10px] font-bold uppercase">Max Discount</Text>
-                      <Text className="text-sm font-bold text-gray-700">₹{coupon.maxDiscount}</Text>
+                      <Text className="text-gray-400 text-[10px] font-bold uppercase">
+                        Max Discount
+                      </Text>
+                      <Text className="text-sm font-bold text-gray-700">
+                        ₹{coupon.maxDiscount}
+                      </Text>
                     </View>
                   </View>
 
@@ -357,26 +413,48 @@ const Coupons = () => {
                       onPress={() => openEditModal(coupon)}
                       className="flex-1 flex-row items-center justify-center py-4 border-r border-gray-100 active:bg-green-50"
                     >
-                      <Ionicons name="create-outline" size={18} color="#16a34a" />
-                      <Text className="ml-2 text-black text-xs font-bold uppercase tracking-wider">Edit</Text>
+                      <Ionicons
+                        name="create-outline"
+                        size={18}
+                        color="#16a34a"
+                      />
+                      <Text className="ml-2 text-black text-xs font-bold uppercase tracking-wider">
+                        Edit
+                      </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       onPress={() => {
-                        const deleteAction = () => handleDeleteCoupon(coupon.code);
+                        const deleteAction = () =>
+                          handleDeleteCoupon(coupon.code);
                         if (isWeb) {
-                          if (window.confirm(`Delete ${coupon.code}?`)) deleteAction();
+                          if (window.confirm(`Delete ${coupon.code}?`))
+                            deleteAction();
                         } else {
-                          Alert.alert("Delete Coupon", `Are you sure you want to delete ${coupon.code}?`, [
-                            { text: "Cancel", style: "cancel" },
-                            { text: "Delete", style: "destructive", onPress: deleteAction },
-                          ]);
+                          Alert.alert(
+                            "Delete Coupon",
+                            `Are you sure you want to delete ${coupon.code}?`,
+                            [
+                              { text: "Cancel", style: "cancel" },
+                              {
+                                text: "Delete",
+                                style: "destructive",
+                                onPress: deleteAction,
+                              },
+                            ]
+                          );
                         }
                       }}
                       className="flex-1 flex-row items-center justify-center py-4 active:bg-red-50"
                     >
-                      <Ionicons name="trash-outline" size={18} color="#dc2626" />
-                      <Text className="ml-2 text-black text-xs font-bold uppercase tracking-wider">Delete</Text>
+                      <Ionicons
+                        name="trash-outline"
+                        size={18}
+                        color="#dc2626"
+                      />
+                      <Text className="ml-2 text-black text-xs font-bold uppercase tracking-wider">
+                        Delete
+                      </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -385,8 +463,12 @@ const Coupons = () => {
           ) : (
             <View className="h-64 justify-center items-center">
               <Ionicons name="ticket-outline" size={48} color="#cbd5e1" />
-              <Text className="text-gray-400 mt-2 font-medium">No coupons found.</Text>
-              <TouchableOpacity onPress={fetchCoupons} className="mt-4"><Text className="text-[#8b008b] font-bold">Retry Fetch</Text></TouchableOpacity>
+              <Text className="text-gray-400 mt-2 font-medium">
+                No coupons found.
+              </Text>
+              <TouchableOpacity onPress={fetchCoupons} className="mt-4">
+                <Text className="text-[#8b008b] font-bold">Retry Fetch</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -403,62 +485,136 @@ const Coupons = () => {
       </TouchableOpacity>
 
       {/* ----------------- UNIFIED ADD/EDIT MODAL ----------------- */}
-      <Modal animationType="slide" transparent={true} visible={addModalVisible} onRequestClose={closeAddModal} statusBarTranslucent={true}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={addModalVisible}
+        onRequestClose={closeAddModal}
+        statusBarTranslucent={true}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+        >
           <View className="flex-1 justify-end bg-black/50">
             <Pressable className="absolute inset-0" onPress={closeAddModal} />
-            <View className="bg-white rounded-t-3xl p-6 pb-10 shadow-2xl h-[85%]" style={{ elevation: 20 }}>
+            <View
+              className="bg-white rounded-t-3xl p-6 pb-10 shadow-2xl h-[85%]"
+              style={{ elevation: 20 }}
+            >
               <View className="flex-row justify-between items-center mb-6">
                 <Text className="text-xl font-bold text-gray-900">
                   {modalMode === "add" ? "Add New Coupon" : "Edit Coupon"}
                 </Text>
-                <TouchableOpacity onPress={closeAddModal} hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}>
+                <TouchableOpacity
+                  onPress={closeAddModal}
+                  hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                >
                   <Ionicons name="close-circle" size={28} color="gray" />
                 </TouchableOpacity>
               </View>
 
-              <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
-                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">Coupon Code</Text>
-                <TextInput 
-                  value={newCode} 
-                  onChangeText={setNewCode} 
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">
+                  Coupon Code
+                </Text>
+                <TextInput
+                  value={newCode}
+                  onChangeText={setNewCode}
                   editable={modalMode === "add"} // Primary key usually cannot change
-                  className={`border border-gray-300 rounded-xl px-4 py-3 mb-4 bg-gray-50 text-black ${modalMode === "edit" ? "opacity-50" : ""}`} 
-                  placeholder="e.g. WELCOME100" 
+                  className={`border border-gray-300 rounded-xl px-4 py-3 mb-4 bg-gray-50 text-black ${modalMode === "edit" ? "opacity-50" : ""}`}
+                  placeholder="e.g. WELCOME100"
                 />
 
-                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">Description</Text>
-                <TextInput value={newDescription} onChangeText={setNewDescription} className="border border-gray-300 rounded-xl px-4 py-3 mb-4 bg-gray-50 text-black" placeholder="Coupon details..." />
+                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">
+                  Description
+                </Text>
+                <TextInput
+                  value={newDescription}
+                  onChangeText={setNewDescription}
+                  className="border border-gray-300 rounded-xl px-4 py-3 mb-4 bg-gray-50 text-black"
+                  placeholder="Coupon details..."
+                />
 
-                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">Discount Type</Text>
+                <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">
+                  Discount Type
+                </Text>
                 <View className="flex-row gap-2 mb-4">
                   {["FLAT", "PERCENTAGE", "FREESHIP"].map((t) => (
-                    <TouchableOpacity key={t} onPress={() => setNewType(t)} className={`flex-1 py-3 rounded-lg border items-center ${newType === t ? "bg-[#8b008b] border-[#8b008b]" : "bg-white border-gray-300"}`}>
-                      <Text className={`text-xs font-bold ${newType === t ? "text-white" : "text-gray-600"}`}>{t}</Text>
+                    <TouchableOpacity
+                      key={t}
+                      onPress={() => setNewType(t)}
+                      className={`flex-1 py-3 rounded-lg border items-center ${newType === t ? "bg-[#8b008b] border-[#8b008b]" : "bg-white border-gray-300"}`}
+                    >
+                      <Text
+                        className={`text-xs font-bold ${newType === t ? "text-white" : "text-gray-600"}`}
+                      >
+                        {t}
+                      </Text>
                     </TouchableOpacity>
                   ))}
                 </View>
 
                 <View className="flex-row gap-4 mb-4">
                   <View className="flex-1">
-                    <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">Value ({newType === "FLAT" ? "₹" : "%"})</Text>
-                    <TextInput value={newValue} onChangeText={setNewValue} keyboardType="numeric" className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-black" placeholder="0" />
+                    <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">
+                      Value ({newType === "FLAT" ? "₹" : "%"})
+                    </Text>
+                    <TextInput
+                      value={newValue}
+                      onChangeText={setNewValue}
+                      keyboardType="numeric"
+                      className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-black"
+                      placeholder="0"
+                    />
                   </View>
                   <View className="flex-1">
-                    <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">Max Discount (₹)</Text>
-                    <TextInput value={newMaxDiscount} onChangeText={setNewMaxDiscount} keyboardType="numeric" className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-black" placeholder="1000" />
+                    <Text className="text-xs font-bold text-gray-500 mb-1 uppercase">
+                      Max Discount (₹)
+                    </Text>
+                    <TextInput
+                      value={newMaxDiscount}
+                      onChangeText={setNewMaxDiscount}
+                      keyboardType="numeric"
+                      className="border border-gray-300 rounded-xl px-4 py-3 bg-gray-50 text-black"
+                      placeholder="1000"
+                    />
                   </View>
                 </View>
 
                 <View className="flex-row items-center justify-between py-4 border-y border-gray-100 mb-6">
-                  <View><Text className="font-bold text-gray-800">Active Status</Text><Text className="text-xs text-gray-400 italic">Enable this coupon for users</Text></View>
-                  <Switch value={newActive} onValueChange={setNewActive} trackColor={{ false: "#d1d5db", true: "#8b008b" }} thumbColor={"#ffffff"} />
+                  <View>
+                    <Text className="font-bold text-gray-800">
+                      Active Status
+                    </Text>
+                    <Text className="text-xs text-gray-400 italic">
+                      Enable this coupon for users
+                    </Text>
+                  </View>
+                  <Switch
+                    value={newActive}
+                    onValueChange={setNewActive}
+                    trackColor={{ false: "#d1d5db", true: "#8b008b" }}
+                    thumbColor={"#ffffff"}
+                  />
                 </View>
 
-                <TouchableOpacity onPress={handleSaveCoupon} disabled={submitting} className={`py-4 rounded-xl items-center shadow-md ${submitting ? "bg-purple-300" : "bg-[#8b008b]"}`} style={{ elevation: 3 }}>
-                  {submitting ? <ActivityIndicator color="white" /> : <Text className="text-white font-bold text-lg">
-                    {modalMode === "add" ? "Create Coupon" : "Save Changes"}
-                  </Text>}
+                <TouchableOpacity
+                  onPress={handleSaveCoupon}
+                  disabled={submitting}
+                  className={`py-4 rounded-xl items-center shadow-md ${submitting ? "bg-purple-300" : "bg-[#8b008b]"}`}
+                  style={{ elevation: 3 }}
+                >
+                  {submitting ? (
+                    <ActivityIndicator color="white" />
+                  ) : (
+                    <Text className="text-white font-bold text-lg">
+                      {modalMode === "add" ? "Create Coupon" : "Save Changes"}
+                    </Text>
+                  )}
                 </TouchableOpacity>
               </ScrollView>
             </View>

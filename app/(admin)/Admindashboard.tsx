@@ -72,7 +72,6 @@ const Admindashboard = () => {
 
   // --- Fetch Data ---
   useEffect(() => {
-    
     fetchAllData();
   }, []);
 
@@ -324,9 +323,9 @@ const Admindashboard = () => {
       {/* ----------------- ADMIN HEADER ----------------- */}
       {/* <View className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-white ${Platform.OS === 'android' ? 'pt-2' : 'py-4'}`}> */}
       <View
-              className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-pink-100 ${Platform.OS === "android" ? "pt-2" : "py-4"} relative z-50`}
-              style={{ zIndex: 100 }} // Explicit zIndex for Web compatibility
-            >
+        className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-pink-100 ${Platform.OS === "android" ? "pt-2" : "py-4"} relative z-50`}
+        style={{ zIndex: 100 }} // Explicit zIndex for Web compatibility
+      >
         <View className="flex-row items-center gap-2">
           <Text className="text-2xl font-extrabold text-[#8b008b] tracking-tighter">
             dailydrop
@@ -408,7 +407,6 @@ const Admindashboard = () => {
       <ScrollView
         className="flex-1 bg-white"
         showsVerticalScrollIndicator={false}
-        
       >
         {loading && (
           <View className="h-24 justify-center items-center">

@@ -16,7 +16,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -160,10 +160,10 @@ const Customizations = () => {
   };
 
   const onRefresh = async () => {
-  setRefreshing(true);
-  await fetchData();
-  setRefreshing(false);
-};
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  };
 
   // --- Open Modals ---
   const openAddModal = () => {
@@ -426,7 +426,6 @@ const Customizations = () => {
         className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-pink-100 ${Platform.OS === "android" ? "pt-2" : "py-4"} relative z-50`}
         style={{ zIndex: 100 }} // Explicit zIndex for Web compatibility
       >
-        
         <View className="flex-row items-center gap-2">
           <Text className="text-2xl font-extrabold text-[#8b008b] tracking-tighter">
             dailydrop
@@ -506,13 +505,13 @@ const Customizations = () => {
         className="flex-1 bg-white"
         showsVerticalScrollIndicator={false}
         refreshControl={
-    <RefreshControl
-      refreshing={refreshing}
-      onRefresh={onRefresh}
-      colors={["#8b008b"]}   // Android spinner color
-      tintColor="#8b008b"
-      />
-  }
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#8b008b"]} // Android spinner color
+            tintColor="#8b008b"
+          />
+        }
       >
         <View className="p-4 pb-24">
           {/* <Text className="text-lg font-bold text-gray-800 mb-6">
