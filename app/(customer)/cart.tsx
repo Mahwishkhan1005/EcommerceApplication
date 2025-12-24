@@ -399,8 +399,7 @@ const CartScreen = () => {
     } else {
       response = await payApi.post('api/cart/cod-checkout', orderPayload);
     }
-
-    // ✅ CREATE ORDER OBJECT (🔥 NEW)
+    
     const orderObject = {
       orderId: Date.now(),
       orderDate: new Date().toISOString(),
