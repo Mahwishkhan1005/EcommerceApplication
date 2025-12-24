@@ -17,7 +17,7 @@ const AdminLayout = () => {
           headerShown: false,
           tabBarLabel: 'Dashboard',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="grid-outline" size={size} color={color} />
+            <Ionicons name="grid" size={size} color={color} />
           ),
         }} 
       />    
@@ -27,10 +27,20 @@ const AdminLayout = () => {
           headerShown: false,
           tabBarLabel: 'Inventory',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
+            <Ionicons name="cube" size={size} color={color} />
           ),
         }} 
-      />    
+      />  
+      <Tabs.Screen
+      name ='coupons'
+      options={{
+        headerShown: false,
+        tabBarLabel:'Coupons',
+        tabBarIcon: ({color,size}) => (
+          <Ionicons name='ticket' size={size} color={color}/>
+        ),
+      }}
+      />  
     </Tabs>
   );
 }

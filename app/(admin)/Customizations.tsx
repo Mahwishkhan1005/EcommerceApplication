@@ -11,16 +11,17 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Define the API URL base
-const API_BASE_URL = "http://192.168.0.200:8080";
+const API_BASE_URL = "http://192.168.0.225:8081";
 
 // --- Interfaces ---
 interface Category {
@@ -77,6 +78,8 @@ const Customizations = () => {
   const [formStock, setFormStock] = useState("");
   const [formImage, setFormImage] = useState<ImageAsset | null>(null);
   const [formCategoryId, setFormCategoryId] = useState<number | null>(null);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const [profileMenuVisible, setProfileMenuVisible] = useState(false);
 
@@ -155,6 +158,12 @@ const Customizations = () => {
       });
     }
   };
+
+  const onRefresh = async () => {
+  setRefreshing(true);
+  await fetchData();
+  setRefreshing(false);
+};
 
   // --- Open Modals ---
   const openAddModal = () => {
@@ -496,6 +505,14 @@ const Customizations = () => {
       <ScrollView
         className="flex-1 bg-white"
         showsVerticalScrollIndicator={false}
+        refreshControl={
+    <RefreshControl
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      colors={["#8b008b"]}   // Android spinner color
+      tintColor="#8b008b"
+      />
+  }
       >
         <View className="p-4 pb-24">
           {/* <Text className="text-lg font-bold text-gray-800 mb-6">

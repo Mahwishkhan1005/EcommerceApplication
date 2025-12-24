@@ -19,7 +19,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 // Define the API URL base
-const API_BASE_URL = "http://192.168.0.200:8080";
+const API_BASE_URL = "http://192.168.0.225:8081";
 
 // --- Interfaces ---
 
@@ -324,16 +324,9 @@ const Admindashboard = () => {
       {/* ----------------- ADMIN HEADER ----------------- */}
       {/* <View className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-white ${Platform.OS === 'android' ? 'pt-2' : 'py-4'}`}> */}
       <View
-        className={`flex-row items-center justify-between px-6 py-4 bg-pink-100/100 relative z-50`}
-        style={{
-          shadowColor: "#000",
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.05,
-          shadowRadius: 10,
-          elevation: 3,
-          backdropFilter: isWeb ? "blur(10px)" : "none", // For Web
-        }}
-      >
+              className={`flex-row items-center justify-between px-4 py-3 border-b border-gray-200 bg-pink-100 ${Platform.OS === "android" ? "pt-2" : "py-4"} relative z-50`}
+              style={{ zIndex: 100 }} // Explicit zIndex for Web compatibility
+            >
         <View className="flex-row items-center gap-2">
           <Text className="text-2xl font-extrabold text-[#8b008b] tracking-tighter">
             dailydrop
@@ -415,6 +408,7 @@ const Admindashboard = () => {
       <ScrollView
         className="flex-1 bg-white"
         showsVerticalScrollIndicator={false}
+        
       >
         {loading && (
           <View className="h-24 justify-center items-center">
