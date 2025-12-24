@@ -728,8 +728,4 @@ const OfferCardPurple = ({ isWeb }: { isWeb: boolean }) => (
   </View>
 );
 
-<<<<<<< HEAD
 export default Admindashboard;
-=======
-export default Admindashboard;
->>>>>>> c1a7fd5626976abbaf78320dc0cab88538272d7e
